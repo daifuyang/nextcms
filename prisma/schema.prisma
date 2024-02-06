@@ -1,15 +1,104 @@
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 低代码页面存储
+model CmsPage {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  fileData    String
+  content     String
+  createId    Int
+  creator     String
+  updateId    Int
+  updater     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+}
+
+// 定义用户模型
+model CmsUser {
+  id              Int       @id @default(autoincrement())
+  userType        Int       @default(0) @db.TinyInt() // 默认值为0，表示前台用户
+  loginName       String    @unique
+  nickname        String?
+  realname        String?
+  phoneNumber     String?   @unique
+  email           String?   @unique
+  gender          String?
+  avatar          String?
+  lastLoginIp     String?
+  lastLoginTime   DateTime?
+  remark          String?
+  createId        Int
+  creator         String
+  updateId        Int
+  updater         String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+}
+
+// 定义用户角色模型
+model CmsUserRole {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique // 角色名称，唯一
+  description String? // 角色描述
+  createId    Int
+  creator     String
+  updateId    Int
+  updater     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+}
+
+// 定义角色和用户关联关系模型
+model CmsUserRoleRelation {
+  id      Int @id @default(autoincrement())
+  userId  Int // 用户ID
+  roleId  Int // 角色ID
+}
+
+// 定义资源文件模型
+model CmsResource {
+  id         Int       @id @default(autoincrement())
+  categryId  Int       @default(0)
+  name       String
+  filePath   String // 资源文件路径
+  md5        String? // 资源文件的 MD5 值
+  sha1       String? // 资源文件的 SHA1 值
+  fileType   String // 资源文件类型，可以是图片、音频、视频等
+  createId   Int
+  creator    String
+  updateId   Int
+  updater    String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+}
+
+// 定义资源分类模型
+model CmsResourceCategory {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique // 分类名称，唯一
+  description String? // 分类描述
+  parentId    Int? // 父级分类ID，用于表示分类的层级结构
+  createId    Int
+  creator     String
+  updateId    Int
+  updater     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 }
