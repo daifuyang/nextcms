@@ -1,19 +1,9 @@
 'use client'
 
-import {} from 'react'
+import * as components from "web-material";
 
 import ReactRender from "@zerocmf/lowcode-react-renderer/src";
 
-
-const components: any = {
-  // Page: (props) => {
-  //   console.log('props',props)
-  //   return <div>hello page  </div>;
-  // },
-  Button: ({children}) => {
-    return <button>button:{children}</button>;
-  }
-}
 
 const schema: any = {
   "componentName": "Page",

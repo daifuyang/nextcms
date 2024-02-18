@@ -15,8 +15,55 @@ model CmsPage {
   id          Int       @id @default(autoincrement())
   title       String
   description String?
-  fileData    String
-  content     String
+  filePath    String?
+  isHome      Boolean
+  version     Int
+  createId    Int
+  creator     String
+  updateId    Int
+  updater     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+}
+
+// 页面版本日志表
+model CmsPagelog {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  filePath    String?
+  isHome      Boolean
+  version     Int
+  createId    Int
+  creator     String
+  createdAt   DateTime @default(now())
+}
+
+// 导航关联页面
+model CmsNav {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String?
+  createId    Int
+  creator     String
+  updateId    Int
+  updater     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+}
+
+// 导航关联子页面
+model CmsNavItem {
+  id          Int       @id @default(autoincrement())
+  navId       Int
+  pageId      Int
+  title       String
+  description String?
+  icon        String?
+  order       Int
+  isLink      Boolean
   createId    Int
   creator     String
   updateId    Int
@@ -28,25 +75,25 @@ model CmsPage {
 
 // 定义用户模型
 model CmsUser {
-  id              Int       @id @default(autoincrement())
-  userType        Int       @default(0) @db.TinyInt() // 默认值为0，表示前台用户
-  loginName       String    @unique
-  nickname        String?
-  realname        String?
-  phoneNumber     String?   @unique
-  email           String?   @unique
-  gender          String?
-  avatar          String?
-  lastLoginIp     String?
-  lastLoginTime   DateTime?
-  remark          String?
-  createId        Int
-  creator         String
-  updateId        Int
-  updater         String
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
+  id            Int       @id @default(autoincrement())
+  userType      Int       @default(0) @db.TinyInt() // 默认值为0，表示前台用户
+  loginName     String    @unique
+  nickname      String?
+  realname      String?
+  phoneNumber   String?   @unique
+  email         String?   @unique
+  gender        String?
+  avatar        String?
+  lastLoginIp   String?
+  lastLoginTime DateTime?
+  remark        String?
+  createId      Int
+  creator       String
+  updateId      Int
+  updater       String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
 }
 
 // 定义用户角色模型
@@ -65,27 +112,27 @@ model CmsUserRole {
 
 // 定义角色和用户关联关系模型
 model CmsUserRoleRelation {
-  id      Int @id @default(autoincrement())
-  userId  Int // 用户ID
-  roleId  Int // 角色ID
+  id     Int @id @default(autoincrement())
+  userId Int // 用户ID
+  roleId Int // 角色ID
 }
 
 // 定义资源文件模型
 model CmsResource {
-  id         Int       @id @default(autoincrement())
-  categryId  Int       @default(0)
-  name       String
-  filePath   String // 资源文件路径
-  md5        String? // 资源文件的 MD5 值
-  sha1       String? // 资源文件的 SHA1 值
-  fileType   String // 资源文件类型，可以是图片、音频、视频等
-  createId   Int
-  creator    String
-  updateId   Int
-  updater    String
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  deletedAt  DateTime?
+  id        Int       @id @default(autoincrement())
+  categryId Int       @default(0)
+  name      String
+  filePath  String // 资源文件路径
+  md5       String? // 资源文件的 MD5 值
+  sha1      String? // 资源文件的 SHA1 值
+  fileType  String // 资源文件类型，可以是图片、音频、视频等
+  createId  Int
+  creator   String
+  updateId  Int
+  updater   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }
 
 // 定义资源分类模型

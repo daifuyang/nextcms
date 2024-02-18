@@ -1,3 +1,12 @@
+# 快速开始
+
+## 数据库迁移
+
+```shell
+npx prisma migrate dev --name init // 数据会丢失
+npx prisma generate
+```
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
