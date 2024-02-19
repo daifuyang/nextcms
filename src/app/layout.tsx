@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -15,20 +16,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="zh">
       <body className={inter.className}>
-        <header>
-          this is header
-          {/* <ul>
-            <li>首页</li>
-            <li>页面</li>
-          </ul> */}
-        </header>
-        <main>
-          main
-        {children}
-        </main>
-        <footer>i am footer</footer>
+        <AntdRegistry>{children}</AntdRegistry>
       </body>
     </html>
   )

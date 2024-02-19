@@ -80,6 +80,7 @@ model CmsUser {
   loginName     String    @unique
   nickname      String?
   realname      String?
+  password      String?
   phoneNumber   String?   @unique
   email         String?   @unique
   gender        String?
