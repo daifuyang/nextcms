@@ -5,7 +5,8 @@ import React, { useEffect, useState } from 'react';
 import login from './action';
 
 const initialState = {
-    user: {},
+    user: null,
+    token: null,
     message: "",
     status: ''
 };
@@ -17,10 +18,9 @@ function Login() {
         if (state?.status == 'error') {
             setOpen(true)
         } else {
-            localStorage.setItem('currentUser',JSON.stringify(state?.user))
             setOpen(false)
         }
-    }, [state?.status])
+    }, [state])
     return (
         <div className='h-screen bg-white'>
             <div className="flex min-h-full flex-col justify-center px-6 pb-28 lg:px-8">
