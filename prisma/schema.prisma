@@ -75,14 +75,14 @@ model CmsNavItem {
 
 // 定义用户模型
 model CmsUser {
-  id            Int       @id @default(autoincrement())
-  userType      Int       @default(0) @db.TinyInt() // 默认值为0，表示前台用户
-  loginName     String    @unique
+  id            Int            @id @default(autoincrement())
+  userType      Int            @default(0) @db.TinyInt() // 默认值为0，表示前台用户
+  loginName     String         @unique
   nickname      String?
   realname      String?
   password      String?
-  phoneNumber   String?   @unique
-  email         String?   @unique
+  phoneNumber   String?        @unique
+  email         String?        @unique
   gender        String?
   avatar        String?
   lastLoginIp   String?
@@ -92,9 +92,21 @@ model CmsUser {
   creator       String
   updateId      Int
   updater       String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   deletedAt     DateTime?
+  CmsUserToken  CmsUserToken[]
+}
+
+// 定义用户token关联表
+model CmsUserToken {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         CmsUser  @relation(fields: [userId], references: [id])
+  accessToken  String
+  refreshToken String
+  expiry       DateTime
+  createdAt    DateTime @default(now())
 }
 
 // 定义用户角色模型

@@ -6,6 +6,9 @@ import path from "path";
 import fs from "fs";
 
 async function pageList(request: NextRequest) {
+
+  const user = request.cookies.get('user')?.value
+
   const params: any = (await request.nextUrl.searchParams) || {};
   const page = params.get('page') || 1
   const pageSize = params.get('pageSize') || 10
