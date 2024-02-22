@@ -16,8 +16,14 @@ async function pageList(request: NextRequest) {
   // 无分页
   if(pageSize == 0) {
     const list = await prisma.cmsPage.findMany({
+      where: {
+        NOT: [
+          { type: 'footer' },
+          { type: 'header' }
+        ]
+      },
       orderBy: {
-        id: "desc"
+        id: "asc"
       }
     });
     return success("获取成功！", list);
@@ -46,15 +52,15 @@ async function pageList(request: NextRequest) {
 // 新增
 export async function addPage(request: NextRequest) {
   const params = (await request.json()) || {};
-  const { title, description, isHome = false, schema = {} } = params;
+  const { title, description, type = 'page', schema = {} } = params;
 
-  if (isHome) {
+  if (type == 'home') {
     await prisma.cmsPage.updateMany({
       where: {
-        isHome: true
+        type: 'home'
       },
       data: {
-        isHome: false
+        type: 'page'
       }
     });
   }
@@ -65,7 +71,7 @@ export async function addPage(request: NextRequest) {
       title,
       description,
       filePath: "",
-      isHome,
+      type,
       version: 1,
       createId: 1,
       creator: "admin",
@@ -99,7 +105,7 @@ export async function addPage(request: NextRequest) {
       title,
       description,
       filePath,
-      isHome,
+      type,
       version: 1,
       createId: 1,
       creator: "admin"

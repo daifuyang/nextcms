@@ -13,15 +13,15 @@ datasource db {
 // 低代码页面存储
 model CmsPage {
   id          Int       @id @default(autoincrement())
-  title       String
-  description String?
-  filePath    String?
-  isHome      Boolean
+  title       String    @db.VarChar(50)
+  description String?   @db.VarChar(200)
+  filePath    String?   @db.VarChar(255)
+  type        String    @default("page") @db.VarChar(10) // page article product header footer
   version     Int
   createId    Int
-  creator     String
+  creator     String    @db.VarChar(50)
   updateId    Int
-  updater     String
+  updater     String    @db.VarChar(50)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -30,25 +30,25 @@ model CmsPage {
 // 页面版本日志表
 model CmsPagelog {
   id          Int      @id @default(autoincrement())
-  title       String
-  description String?
-  filePath    String?
-  isHome      Boolean
+  title       String   @db.VarChar(50)
+  description String?  @db.VarChar(200)
+  filePath    String?  @db.VarChar(255)
+  type        String   @default("page") // page article product header footer
   version     Int
   createId    Int
-  creator     String
+  creator     String   @db.VarChar(50)
   createdAt   DateTime @default(now())
 }
 
 // 导航关联页面
 model CmsNav {
   id          Int       @id @default(autoincrement())
-  title       String
-  description String?
+  title       String    @db.VarChar(50)
+  description String?   @db.VarChar(200)
   createId    Int
-  creator     String
+  creator     String    @db.VarChar(200)
   updateId    Int
-  updater     String
+  updater     String    @db.VarChar(50)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -59,15 +59,15 @@ model CmsNavItem {
   id          Int       @id @default(autoincrement())
   navId       Int
   pageId      Int
-  title       String
-  description String?
-  icon        String?
+  title       String    @db.VarChar(50)
+  description String?   @db.VarChar(200)
+  icon        String?   @db.VarChar(255)
   order       Int
   isLink      Boolean
   createId    Int
-  creator     String
+  creator     String    @db.VarChar(50)
   updateId    Int
-  updater     String
+  updater     String    @db.VarChar(50)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -78,20 +78,20 @@ model CmsUser {
   id            Int            @id @default(autoincrement())
   userType      Int            @default(0) @db.TinyInt() // 默认值为0，表示前台用户
   loginName     String         @unique
-  nickname      String?
-  realname      String?
-  password      String?
+  nickname      String?        @db.VarChar(50)
+  realname      String?        @db.VarChar(50)
+  password      String?        @db.VarChar(100)
   phoneNumber   String?        @unique
   email         String?        @unique
-  gender        String?
-  avatar        String?
-  lastLoginIp   String?
+  gender        Int?           @db.TinyInt()
+  avatar        String?        @db.VarChar(255)
+  lastLoginIp   String?        @db.VarChar(128)
   lastLoginTime DateTime?
-  remark        String?
+  remark        String?        @db.VarChar(255)
   createId      Int
-  creator       String
+  creator       String         @db.VarChar(50)
   updateId      Int
-  updater       String
+  updater       String         @db.VarChar(50)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   deletedAt     DateTime?
@@ -103,8 +103,8 @@ model CmsUserToken {
   id           Int      @id @default(autoincrement())
   userId       Int
   user         CmsUser  @relation(fields: [userId], references: [id])
-  accessToken  String
-  refreshToken String
+  accessToken  String   @db.VarChar(255)
+  refreshToken String   @db.VarChar(255)
   expiry       DateTime
   createdAt    DateTime @default(now())
 }
@@ -113,11 +113,11 @@ model CmsUserToken {
 model CmsUserRole {
   id          Int       @id @default(autoincrement())
   name        String    @unique // 角色名称，唯一
-  description String? // 角色描述
+  description String?   @db.VarChar(200) // 角色描述
   createId    Int
-  creator     String
+  creator     String    @db.VarChar(50)
   updateId    Int
-  updater     String
+  updater     String    @db.VarChar(50)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -134,15 +134,15 @@ model CmsUserRoleRelation {
 model CmsResource {
   id        Int       @id @default(autoincrement())
   categryId Int       @default(0)
-  name      String
-  filePath  String // 资源文件路径
-  md5       String? // 资源文件的 MD5 值
-  sha1      String? // 资源文件的 SHA1 值
-  fileType  String // 资源文件类型，可以是图片、音频、视频等
+  name      String    @db.VarChar(50)
+  filePath  String    @db.VarChar(255) // 资源文件路径
+  md5       String?   @db.VarChar(32) // 资源文件的 MD5 值
+  sha1      String?   @db.VarChar(40) // 资源文件的 SHA1 值
+  fileType  String    @db.VarChar(10) // 资源文件类型，可以是图片、音频、视频等
   createId  Int
-  creator   String
+  creator   String    @db.VarChar(50)
   updateId  Int
-  updater   String
+  updater   String    @db.VarChar(50)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -152,13 +152,43 @@ model CmsResource {
 model CmsResourceCategory {
   id          Int       @id @default(autoincrement())
   name        String    @unique // 分类名称，唯一
-  description String? // 分类描述
+  description String?   @db.VarChar(200) // 分类描述
   parentId    Int? // 父级分类ID，用于表示分类的层级结构
   createId    Int
-  creator     String
+  creator     String    @db.VarChar(50)
   updateId    Int
-  updater     String
+  updater     String    @db.VarChar(50)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
+}
+
+// 文章表
+model CmsArticle {
+  id             Int       @id @default(autoincrement())
+  postFormat     Int       @db.TinyInt() // 文章格式
+  seoTitle       String    @db.VarChar(100) // 三要素标题，用于seo优化
+  seoKeywords    String    @db.VarChar(255) // 三要素关键词，用于seo优化
+  seoDescription String    @db.VarChar(255) // 三要素描述，用于seo优化
+  thumbnail      String    @db.VarChar(255) // 封面
+  title          String    @db.VarChar(100) // 标题
+  content        String    @db.LongText // 内容
+  keywords       String    @db.VarChar(255) // 关键词
+  excerpt        String    @db.VarChar(255) // 摘要
+  source         String    @db.VarChar(255) // 文章来源
+  isTop          Int       @db.TinyInt() // 置顶
+  hits           Int // 点击数
+  favorites      Int // 收藏数
+  Like           Int // 点赞数
+  Comment        Int // 点赞数
+  more           Json      @db.Json // 扩展属性
+  status         Boolean // 文章状态
+  order          Int // 排序
+  createId       Int
+  creator        String    @db.VarChar(50)
+  updateId       Int
+  updater        String    @db.VarChar(50)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
 }

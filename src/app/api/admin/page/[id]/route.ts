@@ -4,6 +4,20 @@ import prisma from "@/model";
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
+import { getFileSchema } from "@/utils/util";
+
+const assignSchema = (schema: any, publicSchema: any, position: "start" | "end" = "end") => {
+  if (publicSchema) {
+    if (position == "start") {
+      schema.children = schema.children?.filter((n: any) => n.componentName !== "Header");
+      console.log('schema.children',schema.children)
+      schema.children.unshift(publicSchema);
+    } else {
+      schema.children = schema.children?.filter((n: any) => n.componentName !== "Footer");
+      schema.children.push(publicSchema);
+    }
+  }
+};
 
 export async function show(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
@@ -12,9 +26,26 @@ export async function show(request: NextRequest, { params }: { params: { id: str
     return error("该页面不存在或参数错误！");
   }
 
+  // 获取公共头和公共页脚
+  const header: any = await prisma.cmsPage.findFirst({
+    where: {
+      type: "header"
+    }
+  });
+
+  const headerSchema = getFileSchema(header?.filePath);
+
+  const footer: any = await prisma.cmsPage.findFirst({
+    where: {
+      type: "footer"
+    }
+  });
+
+  const footerSchema = getFileSchema(footer?.filePath);
+
   const page: any = await prisma.cmsPage.findFirst({
     where: {
-      id: Number(id)
+      id: Number(id),
     }
   });
 
@@ -24,12 +55,13 @@ export async function show(request: NextRequest, { params }: { params: { id: str
 
   // 读取本地schema文件
   const filePath = page?.filePath;
-  if (filePath) {
-    const file = path.resolve(process.cwd(), filePath);
-    const jsonData = fs.readFileSync(file, "utf8");
-    page.schema = JSON.parse(jsonData);
-  }
+  let schema = getFileSchema(filePath);
+  assignSchema(schema, headerSchema, "start");
+  assignSchema(schema, footerSchema);
 
+  if (schema) {
+    page.schema = schema;
+  }
   return success("获取成功！", page);
 }
 
@@ -53,50 +85,124 @@ export async function update(request: NextRequest, { params }: { params: { id: s
 
   const { version } = page;
   const json = await request.json();
-  const { title = page.title, description = page.description, isHome = page.isHome, schema = page.schema } = json;
+  const {
+    title = page.title,
+    description = page.description,
+    type = page.type,
+    schema = page.schema
+  } = json;
   const nextVersion = version + 1;
   const key = page.id;
   const filePath = `schema/page-${key}-${nextVersion}.json`;
   const file = path.resolve(process.cwd(), filePath);
+  await prisma.$transaction(async (tx: any) => {
+    // 获取公共页头和公共页脚
+    let headerSchema: any = schema?.children?.find((n: any) => n.componentName === "Header");
+    // 查询头页面是否存在
+    savePublicPage("header", headerSchema, tx);
 
-  try {
+    let footerSchema: any = schema?.children?.find((n: any) => n.componentName === "Footer");
+    savePublicPage("footer", footerSchema, tx);
+
     fs.writeFileSync(file, JSON.stringify(schema));
-  } catch (err) {
-    return error("新增失败！", err);
-  }
 
-  // 更新页面
-  page = await prisma.cmsPage.update({
+    // 更新页面
+    page = await tx.cmsPage.update({
+      where: {
+        id: Number(id)
+      },
+      data: {
+        filePath,
+        version: nextVersion,
+        updateId: 1,
+        updater: "admin"
+      }
+    });
+
+    // 存入日志表中
+    await tx.cmsPagelog.create({
+      data: {
+        title,
+        description,
+        filePath,
+        type,
+        version: nextVersion,
+        createId: 1,
+        creator: "admin"
+      }
+    });
+  });
+  return success("更新成功！", page);
+}
+
+export async function savePublicPage(type: string, schema: any, tx = prisma) {
+  // 先查询页面是否存在
+  let page: any = await tx.cmsPage.findFirst({
     where: {
-      id: Number(id)
-    },
-    data: {
-      title,
-      description,
-      filePath,
-      isHome,
-      version: nextVersion,
-      createId: 1,
-      creator: "admin",
-      updateId: 1,
-      updater: "admin"
+      type
     }
   });
 
+  // 读取本地schema文件
+
+  let oldSchema = "";
+  const pageSchema = getFileSchema(page?.filePath);
+  if (pageSchema) {
+    oldSchema = JSON.stringify(pageSchema);
+  }
+  const newSchema = schema?.componentName === _.upperFirst(type) ? JSON.stringify(schema) : "";
+
+  // 不存在则新增
+  let filePath = `schema/${type}.json`;
+  let version = 1;
+  if (!page) {
+    const file = path.resolve(process.cwd(), filePath);
+
+    fs.writeFileSync(file, newSchema);
+
+    page = await tx.cmsPage.create({
+      data: {
+        title: type == "header" ? "公共页头" : "公共页脚",
+        description: "header" ? "公共页头" : "公共页脚",
+        filePath,
+        type,
+        version,
+        createId: 1,
+        creator: "admin",
+        updateId: 1,
+        updater: "admin"
+      }
+    });
+  } else if (oldSchema !== newSchema) {
+    version = page.version + 1;
+    filePath = `schema/${type}-${version}.json`;
+    const file = path.resolve(process.cwd(), filePath);
+    fs.writeFileSync(file, JSON.stringify(schema));
+    page = await tx.cmsPage.update({
+      where: {
+        id: page.id
+      },
+      data: {
+        filePath,
+        version,
+        updateId: 1,
+        updater: "admin"
+      }
+    });
+  }
+
   // 存入日志表中
-  await prisma.cmsPagelog.create({
+  await tx.cmsPagelog.create({
     data: {
-      title,
-      description,
+      title: type == "header" ? "公共页头" : "公共页脚",
+      description: "header" ? "公共页头" : "公共页脚",
       filePath,
-      isHome,
-      version: nextVersion,
+      type,
+      version,
       createId: 1,
       creator: "admin"
     }
   });
-
-  return success("更新成功！", page);
 }
 
 module.exports = {

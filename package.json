@@ -12,7 +12,6 @@
       "@ant-design/nextjs-registry": "^1.0.0",
       "@heroicons/react": "^2.1.1",
       "@node-oauth/oauth2-server": "^5.1.0",
-      "@prisma/client": "^5.9.1",
       "@types/jsonwebtoken": "^9.0.5",
       "antd": "^5.14.1",
       "clsx": "^2.1.0",
@@ -25,6 +24,7 @@
       "swiper": "9.4.1"
    },
    "devDependencies": {
+      "@prisma/client": "^5.10.2",
       "@types/lodash": "^4.14.202",
       "@types/node": "^20",
       "@types/react": "^18",
@@ -33,7 +33,7 @@
       "eslint": "^8",
       "eslint-config-next": "14.0.4",
       "postcss": "^8",
-      "prisma": "^5.9.1",
+      "prisma": "^5.10.2",
       "sass": "^1.71.0",
       "tailwindcss": "^3.3.0",
       "typescript": "^5"
