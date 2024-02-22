@@ -167,23 +167,23 @@ model CmsResourceCategory {
 model CmsArticle {
   id             Int       @id @default(autoincrement())
   postFormat     Int       @db.TinyInt() // 文章格式
-  seoTitle       String    @db.VarChar(100) // 三要素标题，用于seo优化
-  seoKeywords    String    @db.VarChar(255) // 三要素关键词，用于seo优化
-  seoDescription String    @db.VarChar(255) // 三要素描述，用于seo优化
-  thumbnail      String    @db.VarChar(255) // 封面
+  seoTitle       String?   @db.VarChar(100) // 三要素标题，用于seo优化
+  seoKeywords    String?   @db.VarChar(255) // 三要素关键词，用于seo优化
+  seoDescription String?   @db.VarChar(255) // 三要素描述，用于seo优化
+  thumbnail      String?   @db.VarChar(255) // 封面
   title          String    @db.VarChar(100) // 标题
-  content        String    @db.LongText // 内容
-  keywords       String    @db.VarChar(255) // 关键词
-  excerpt        String    @db.VarChar(255) // 摘要
-  source         String    @db.VarChar(255) // 文章来源
+  content        String?   @db.LongText // 内容
+  keywords       String?   @db.VarChar(255) // 关键词
+  excerpt        String?   @db.VarChar(255) // 摘要
+  source         String?   @db.VarChar(255) // 文章来源
   isTop          Int       @db.TinyInt() // 置顶
   hits           Int // 点击数
   favorites      Int // 收藏数
   Like           Int // 点赞数
   Comment        Int // 点赞数
-  more           Json      @db.Json // 扩展属性
-  status         Boolean // 文章状态
-  order          Int // 排序
+  more           Json?     @db.Json // 扩展属性
+  status         Boolean   @default(true) // 文章状态
+  order          Int? // 排序
   createId       Int
   creator        String    @db.VarChar(50)
   updateId       Int
