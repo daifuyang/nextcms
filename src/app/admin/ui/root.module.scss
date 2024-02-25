@@ -1,0 +1,64 @@
+.root {
+    height: 100vh;
+
+    :global {
+        .ant-layout {
+            height: 100%;
+
+            .global-header {
+                position: relative;
+                display: flex;
+                align-items: center;
+                height: 100%;
+                padding: 0 16px;
+
+                .global-header-logo {
+                    height: 100%;
+    
+                    >a {
+                        display: flex;
+                        align-items: center;
+                        height: 100%;
+    
+                        >img {
+                            height: 28px;
+                        }
+    
+                        >h1 {
+                            height: 32px;
+                            margin: 0 0 0 12px;
+                            color: #fff;
+                            font-weight: 600;
+                            font-size: 18px;
+                            line-height: 32px;
+                        }
+                    }
+                }
+
+            }
+
+            .ant-layout-sider {
+                &.ant-layout-sider-collapsed {
+
+
+                    .ant-layout-sider-trigger {
+                        .sider-trigger {
+                            inset-inline-start: 0;
+                            padding-inline: calc(50% - 8px - 0px);
+                            text-overflow: clip;
+                        }
+                    }
+                }
+
+                .ant-layout-sider-trigger {
+                    .sider-trigger {
+                        transition: all 0.2s;
+                        padding-left: 24px;
+                        text-align: left;
+                    }
+                }
+            }
+        }
+    }
+
+}
