@@ -182,7 +182,8 @@ model CmsArticle {
   Like           Int // 点赞数
   Comment        Int // 点赞数
   more           Json?     @db.Json // 扩展属性
-  status         Boolean   @default(true) // 文章状态
+  articleStatus  Boolean   @default(true) // 文章状态
+  commentStatus  Boolean   @default(true) // 评论状态
   order          Int? // 排序
   createId       Int
   creator        String    @db.VarChar(50)
@@ -191,4 +192,34 @@ model CmsArticle {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
+}
+
+// 文章分类
+model CmsArticleCategory {
+  id             Int       @id @default(autoincrement())
+  parentId       Int // 分类id
+  seoTitle       String?   @db.VarChar(100) // 三要素标题，用于seo优化
+  seoKeywords    String?   @db.VarChar(255) // 三要素关键词，用于seo优化
+  seoDescription String?   @db.VarChar(255) // 三要素描述，用于seo优化
+  name           String    @db.VarChar(100)
+  description    String    @db.VarChar(255)
+  status         Boolean   @db.TinyInt()
+  count          Int // 文章数
+  path           String    @db.VarChar(255)
+  order          Int? // 排序
+  createId       Int
+  creator        String    @db.VarChar(50)
+  updateId       Int
+  updater        String    @db.VarChar(50)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+}
+
+// 文章和分类关联表
+model CmsArticleCategoryPost {
+  id         Int  @id @default(autoincrement())
+  postId     Int // 文章id
+  categoryId Int //分类id
+  order      Int? // 排序
 }
