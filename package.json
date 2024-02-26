@@ -11,10 +11,13 @@
    "dependencies": {
       "@ant-design/icons": "^5.3.0",
       "@ant-design/nextjs-registry": "^1.0.0",
+      "@ant-design/pro-components": "^2.6.49",
       "@heroicons/react": "^2.1.1",
       "@node-oauth/oauth2-server": "^5.1.0",
+      "@reduxjs/toolkit": "^2.2.1",
       "@types/jsonwebtoken": "^9.0.5",
       "antd": "^5.14.1",
+      "axios": "^1.6.7",
       "clsx": "^2.1.0",
       "dayjs": "^1.11.10",
       "jsonwebtoken": "^9.0.2",
@@ -22,6 +25,7 @@
       "next": "14.0.2",
       "react": "^18",
       "react-dom": "^18",
+      "react-redux": "^9.1.0",
       "swiper": "9.4.1"
    },
    "devDependencies": {

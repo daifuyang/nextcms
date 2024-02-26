@@ -1,10 +1,10 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { Layout as AntdLayout } from 'antd';
-import Root from './ui/Root'
-import SiderNav from './ui/Sider'
-import Header from './ui/Header'
-import Content from './ui/Content';
+import Root from './ui/root'
+import SiderNav from './ui/sider'
+import Header from './ui/header'
+import Content from './ui/content';
 import prisma from '@/model'
 
 

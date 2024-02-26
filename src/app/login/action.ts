@@ -24,7 +24,6 @@ export default async function login(prevState: any, formData: FormData) {
     // 更新哈希对象的内容
     hash.update(password);
     const hashedPassword = hash.digest("hex");
-    console.log('hashedPassword',hashedPassword)
     if (hashedPassword !== user?.password) {
       return { user: null, token: null, message: "账号或密码不正确！", status: "error" };
     } else {
