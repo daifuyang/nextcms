@@ -1,9 +1,8 @@
 "use client";
 
-import { EllipsisOutlined, PlusOutlined } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
-import { ProTable, TableDropdown } from "@ant-design/pro-components";
-import { Button, Divider, Dropdown, Space, Tag } from "antd";
+import { ProTable } from "@ant-design/pro-components";
+import { Divider, Space, Tag } from "antd";
 import { useRef } from "react";
 import { list } from "@/services/article";
 import ModalSave from "./modalSave";
@@ -135,9 +134,7 @@ export default function List() {
           labelWidth: "auto"
         }}
         headerTitle="文章列表"
-        toolBarRender={() => [
-          <ModalSave key="modalSave" />
-        ]}
+        toolBarRender={() => [<ModalSave key="modalSave" />]}
       />
     </>
   );
