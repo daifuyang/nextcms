@@ -1,36 +1,36 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import _ from 'lodash';
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
+import _ from "lodash";
 
 // 创建一个 axios 实例
 const instance = axios.create({
-  baseURL: '/',
+  baseURL: "/",
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
-  },
+    "Content-Type": "application/json"
+  }
 });
 
 instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const str = localStorage.getItem("token");
   // 如果token存在，则将其添加到请求头的Authorization字段中
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (str) {
+    const token = JSON.parse(str)
+    config.headers.Authorization = `Bearer ${token.accessToken}`;
   }
   return config;
 });
 
-// 导出一个封装后的请求函数
-export const request = (url: string, config: AxiosRequestConfig = {}): Promise<AxiosResponse> => {
-  let newConfig: AxiosRequestConfig = {};
-
-  if (_.lowerCase(config.method) !== 'post') {
-    newConfig.params = config;
-  } else {
-    newConfig = { ...config };
-  }
-  newConfig.url = url;
-
-  return instance(newConfig).then((response) => {
+instance.interceptors.response.use(
+  (response: AxiosResponse) => {
+    // 对响应数据做点什么
     return response.data;
-  });
-};
+  },
+  (error: AxiosError) => {
+    // 对响应错误做点什么
+    return Promise.reject(error);
+  }
+);
+
+export {
+  instance as request
+}

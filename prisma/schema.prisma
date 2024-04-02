@@ -11,106 +11,116 @@ datasource db {
 }
 
 // 低代码页面存储
-model CmsPage {
-  id          Int       @id @default(autoincrement())
-  title       String    @db.VarChar(50)
-  description String?   @db.VarChar(200)
-  filePath    String?   @db.VarChar(255)
-  type        String    @default("page") @db.VarChar(10) // page article product header footer
-  version     Int
-  createId    Int
-  creator     String    @db.VarChar(50)
-  updateId    Int
-  updater     String    @db.VarChar(50)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
+model cmsPage {
+  id          Int       @id @default(autoincrement()) @map(name: "id")
+  title       String    @map(name: "title") @db.VarChar(50)
+  description String?   @map(name: "description") @db.VarChar(200)
+  filePath    String?   @map(name: "file_path") @db.VarChar(255)
+  type        String    @default("page") @map(name: "type") @db.VarChar(10) // page article product header footer
+  version     Int       @map(name: "version")
+  createId    Int       @map(name: "create_id")
+  creator     String    @map(name: "creator") @db.VarChar(50)
+  updateId    Int       @map(name: "update_id")
+  updater     String    @map(name: "updater") @db.VarChar(50)
+  createdAt   DateTime  @default(now()) @map(name: "created_at")
+  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
+  deletedAt   DateTime? @map(name: "deleted_at")
+
+  @@map("cms_page")
 }
 
 // 页面版本日志表
-model CmsPagelog {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(50)
-  description String?  @db.VarChar(200)
-  filePath    String?  @db.VarChar(255)
-  type        String   @default("page") // page article product header footer
-  version     Int
-  createId    Int
-  creator     String   @db.VarChar(50)
-  createdAt   DateTime @default(now())
+model cmsPageLog {
+  id          Int      @id @default(autoincrement()) @map(name: "id")
+  title       String   @map(name: "title") @db.VarChar(50)
+  description String?  @map(name: "description") @db.VarChar(200)
+  filePath    String?  @map(name: "file_path") @db.VarChar(255)
+  type        String   @default("page") @map(name: "type") @db.VarChar(10) // page article product header footer
+  version     Int      @map(name: "version")
+  createId    Int      @map(name: "create_id")
+  creator     String   @map(name: "creator") @db.VarChar(50)
+  createdAt   DateTime @default(now()) @map(name: "created_at")
+
+  @@map("cms_pagelog")
 }
 
 // 导航关联页面
-model CmsNav {
-  id          Int       @id @default(autoincrement())
-  title       String    @db.VarChar(50)
-  description String?   @db.VarChar(200)
-  createId    Int
-  creator     String    @db.VarChar(200)
-  updateId    Int
-  updater     String    @db.VarChar(50)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
+model cmsNav {
+  id          Int       @id @default(autoincrement()) @map(name: "id")
+  title       String    @map(name: "title") @db.VarChar(50)
+  description String?   @map(name: "description") @db.VarChar(200)
+  createId    Int       @map(name: "create_id")
+  creator     String    @map(name: "creator") @db.VarChar(200)
+  updateId    Int       @map(name: "update_id")
+  updater     String    @map(name: "updater") @db.VarChar(50)
+  createdAt   DateTime  @default(now()) @map(name: "created_at")
+  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
+  deletedAt   DateTime? @map(name: "deleted_at")
+
+  @@map("cms_nav")
 }
 
 // 导航关联子页面
-model CmsNavItem {
-  id          Int       @id @default(autoincrement())
-  navId       Int
-  pageId      Int
-  title       String    @db.VarChar(50)
-  description String?   @db.VarChar(200)
-  icon        String?   @db.VarChar(255)
-  order       Int
-  isLink      Boolean
-  createId    Int
-  creator     String    @db.VarChar(50)
-  updateId    Int
-  updater     String    @db.VarChar(50)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
+model cmsNavItem {
+  id          Int       @id @default(autoincrement()) @map(name: "id")
+  navId       Int       @map(name: "nav_id")
+  pageId      Int       @map(name: "page_id")
+  title       String    @map(name: "title") @db.VarChar(50)
+  description String?   @map(name: "description") @db.VarChar(200)
+  icon        String?   @map(name: "icon") @db.VarChar(255)
+  order       Int       @map(name: "order")
+  isLink      Boolean   @map(name: "is_link")
+  createId    Int       @map(name: "create_id")
+  creator     String    @map(name: "creator") @db.VarChar(50)
+  updateId    Int       @map(name: "update_id")
+  updater     String    @map(name: "updater") @db.VarChar(50)
+  createdAt   DateTime  @default(now()) @map(name: "created_at")
+  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
+  deletedAt   DateTime? @map(name: "deleted_at")
+
+  @@map("cms_navitem")
 }
 
 // 定义用户模型
-model CmsUser {
-  id            Int            @id @default(autoincrement())
-  userType      Int            @default(0) @db.TinyInt() // 默认值为0，表示前台用户
-  loginName     String         @unique
-  nickname      String?        @db.VarChar(50)
-  realname      String?        @db.VarChar(50)
-  password      String?        @db.VarChar(100)
-  phoneNumber   String?        @unique
-  email         String?        @unique
-  gender        Int?           @db.TinyInt()
-  avatar        String?        @db.VarChar(255)
-  lastLoginIp   String?        @db.VarChar(128)
+model cmsUser {
+  id            Int       @id @default(autoincrement())
+  userType      Int       @default(0) @db.TinyInt() // 默认值为0，表示前台用户
+  loginName     String    @unique
+  nickname      String?   @db.VarChar(50)
+  realname      String?   @db.VarChar(50)
+  password      String?   @db.VarChar(100)
+  phoneNumber   String?   @unique
+  email         String?   @unique
+  gender        Int?      @db.TinyInt()
+  avatar        String?   @db.VarChar(255)
+  lastLoginIp   String?   @db.VarChar(128)
   lastLoginTime DateTime?
-  remark        String?        @db.VarChar(255)
+  remark        String?   @db.VarChar(255)
   createId      Int
-  creator       String         @db.VarChar(50)
+  creator       String    @db.VarChar(50)
   updateId      Int
-  updater       String         @db.VarChar(50)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  updater       String    @db.VarChar(50)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
-  CmsUserToken  CmsUserToken[]
+
+  @@map("cms_user")
 }
 
 // 定义用户token关联表
-model CmsUserToken {
+model cmsUserToken {
   id           Int      @id @default(autoincrement())
   userId       Int
-  user         CmsUser  @relation(fields: [userId], references: [id])
   accessToken  String   @db.VarChar(255)
   refreshToken String   @db.VarChar(255)
   expiry       DateTime
   createdAt    DateTime @default(now())
+
+  @@map("cms_user_token")
 }
 
 // 定义用户角色模型
-model CmsUserRole {
+model cmsUserRole {
   id          Int       @id @default(autoincrement())
   name        String    @unique // 角色名称，唯一
   description String?   @db.VarChar(200) // 角色描述
@@ -121,17 +131,21 @@ model CmsUserRole {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
+
+  @@map("cms_user_role")
 }
 
 // 定义角色和用户关联关系模型
-model CmsUserRoleRelation {
+model cmsUserRoleRelation {
   id     Int @id @default(autoincrement())
   userId Int // 用户ID
   roleId Int // 角色ID
+
+  @@map("cms_user_role_relation")
 }
 
 // 定义资源文件模型
-model CmsResource {
+model cmsResource {
   id        Int       @id @default(autoincrement())
   categryId Int       @default(0)
   name      String    @db.VarChar(50)
@@ -146,10 +160,12 @@ model CmsResource {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+
+  @@map("cms_resource")
 }
 
 // 定义资源分类模型
-model CmsResourceCategory {
+model cmsResourceCategory {
   id          Int       @id @default(autoincrement())
   name        String    @unique // 分类名称，唯一
   description String?   @db.VarChar(200) // 分类描述
@@ -161,10 +177,12 @@ model CmsResourceCategory {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
+
+  @@map("cms_resource_category")
 }
 
 // 文章表
-model CmsArticle {
+model cmsArticle {
   id             Int       @id @default(autoincrement())
   postFormat     Int       @db.TinyInt() // 文章格式
   seoTitle       String?   @db.VarChar(100) // 三要素标题，用于seo优化
@@ -192,10 +210,12 @@ model CmsArticle {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
+
+  @@map("cms_article")
 }
 
 // 文章分类
-model CmsArticleCategory {
+model cmsArticleCategory {
   id             Int       @id @default(autoincrement())
   parentId       Int // 分类id
   seoTitle       String?   @db.VarChar(100) // 三要素标题，用于seo优化
@@ -214,12 +234,16 @@ model CmsArticleCategory {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
+
+  @@map("cms_article_category")
 }
 
 // 文章和分类关联表
-model CmsArticleCategoryPost {
+model cmsArticleCategoryPost {
   id         Int  @id @default(autoincrement())
   postId     Int // 文章id
   categoryId Int //分类id
   order      Int? // 排序
+
+  @@map("cms_article_category_post")
 }

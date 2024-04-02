@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 
-import initialStateReducer from './Slice/initialState'
+import initialStateReducer from './slice/initialState'
+import userState from './slice/userState'
 
 export const store = configureStore({
   reducer: {
-    initialStateReducer
+    initialStateReducer,
+    userState
   },
 })
 

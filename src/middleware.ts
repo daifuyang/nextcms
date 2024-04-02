@@ -5,7 +5,9 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
-  if (request.nextUrl.pathname.startsWith("/api/admin")) {
+  if (request.nextUrl.pathname === "/api/admin/user/login") {
+    return response;
+  } else if (request.nextUrl.pathname.startsWith("/api/admin")) {
     const { origin } = request.nextUrl;
     const authHeader = request.headers.get("Authorization");
     const accessToken = authHeader && authHeader.split(" ")[1];

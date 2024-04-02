@@ -55,9 +55,8 @@ export default function Content(props: any) {
   const { routes = [] } = useSelector((state: RootState) => state.initialStateReducer.initialState);
 
   const pathname = usePathname();
-
   const items = getCurrentBreadcrumb(pathname, routes);
-  console.log("items", items);
+
 
   //   const items = [
   //     {

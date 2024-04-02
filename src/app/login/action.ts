@@ -1,9 +1,9 @@
 "use server";
 
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
+import bcrypt from "bcrypt";
 import { cookies } from 'next/headers';
-import prisma from "@/model";
+import prisma from "@/utils/prisma";
 import dayjs from "dayjs";
 import { redirect } from "next/navigation";
 
@@ -19,12 +19,14 @@ export default async function login(prevState: any, formData: FormData) {
       }
     });
 
+    if(!user) {
+      return { user: null, token: null, message: "账号不存在！", status: "error" };
+    }
+
     // 比对密码
-    const hash = crypto.createHash("sha256");
-    // 更新哈希对象的内容
-    hash.update(password);
-    const hashedPassword = hash.digest("hex");
-    if (hashedPassword !== user?.password) {
+    const userPassword = user.password || '';
+    const isMatch = await bcrypt.compare(password, userPassword);
+    if ( !isMatch ) {
       return { user: null, token: null, message: "账号或密码不正确！", status: "error" };
     } else {
 

@@ -1,55 +1,58 @@
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { Layout as AntdLayout } from 'antd';
-import Root from './ui/root'
-import SiderNav from './ui/sider'
-import Header from './ui/header'
-import Content from './ui/content';
-import prisma from '@/model'
+"use client";
 
+import { Layout as AntdLayout } from "antd";
 
-export default async function Layout(props: any) {
-    const user = await getUser()
-    const { children } = props
-    return (
-        <Root>
+import Root from "./ui/root";
+import SiderNav from "./ui/sider";
+import Header from "./ui/header";
+import Content from "./ui/content";
+import dynamic from "next/dynamic";
+
+import "./loading.css";
+import { usePathname } from "next/navigation";
+
+const AdminAuth = dynamic(() => import("@/components/adminAuth"), {
+  loading: () => (
+    <div className="flex flex-col items-center justify-center h-screen min-h-[362px]">
+      <div className="page-loading-warp">
+        <div className="ant-spin ant-spin-lg ant-spin-spinning">
+          <span className="ant-spin-dot ant-spin-dot-spin">
+            <i className="ant-spin-dot-item"></i>
+            <i className="ant-spin-dot-item"></i>
+            <i className="ant-spin-dot-item"></i>
+            <i className="ant-spin-dot-item"></i>
+          </span>
+        </div>
+      </div>
+      <div className="loading-title">正在加载资源</div>
+      <div className="loading-sub-title">初次加载资源可能需要较多时间，请耐心等待</div>
+    </div>
+  ),
+  ssr: false
+});
+
+export default function Layout(props: any) {
+  const { children } = props;
+
+  const pathname = usePathname();
+
+  if (pathname === "/admin/login") {
+    return children;
+  }
+
+  return (
+    <AdminAuth>
+      <Root>
+        <AntdLayout>
+          <Header />
+          <AntdLayout>
+            <SiderNav />
             <AntdLayout>
-                <Header />
-                <AntdLayout>
-                    <SiderNav />
-                    <AntdLayout>
-                        <Content>
-                            {children}
-                        </Content>
-                    </AntdLayout>
-                </AntdLayout>
+              <Content>{children}</Content>
             </AntdLayout>
-        </Root>
-    )
-}
-
-async function getUser() {
-    const token = cookies().get('token')?.value
-    if (token) {
-        const tokenObj = JSON.parse(token)
-        if (tokenObj.accessToken) {
-            const usereToken = await prisma.cmsUserToken.findFirst({
-                where: {
-                    accessToken: tokenObj.accessToken,
-                    expiry: {
-                        gt: new Date() // 没有失效 
-                    }
-                }
-            })
-            if (usereToken?.userId) {
-                const user = await prisma.cmsUser.findFirst({
-                    where: {
-                        id: usereToken?.userId
-                    }
-                })
-                return user
-            }
-        }
-    }
-    redirect('/login')
+          </AntdLayout>
+        </AntdLayout>
+      </Root>
+    </AdminAuth>
+  );
 }
