@@ -1,6 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import {
-    DrawerForm,
+  DrawerForm,
   ProForm,
   ProFormDateRangePicker,
   ProFormSelect,
@@ -24,7 +24,7 @@ export default function ModalSave() {
   return (
     <DrawerForm<ModalFormProps>
       title={title}
-      width={'80%'}
+      width={"80%"}
       trigger={
         <Button icon={<PlusOutlined />} type="primary">
           新建
@@ -33,14 +33,20 @@ export default function ModalSave() {
       form={form}
       autoFocusFirstInput
       drawerProps={{
-        destroyOnClose: true,
+        destroyOnClose: true
       }}
       onFinish={async (values) => {
         message.success("提交成功");
         return true;
       }}
     >
-      <ProFormTreeSelect label="分类" name="categoryId" />
+      <ProFormTreeSelect
+        fieldProps={{
+          style: { maxWidth: 288 }
+        }}
+        label="分类"
+        name="categoryId"
+      />
       <ProFormText label="标题" name="title" />
       <ProFormSelect label="标签" name="keywords" />
       <ProFormDateRangePicker label="发布日期" name="published_time" />
@@ -50,7 +56,13 @@ export default function ModalSave() {
           src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
         />
       </ProForm.Item>
-      <ProFormText label="作者" name="author" />
+      <ProFormText
+        ieldProps={{
+          style: { maxWidth: 288 }
+        }}
+        label="作者"
+        name="author"
+      />
       <ProFormTextArea label="摘要" name="excerpt" />
 
       <ProForm.Item label="详情" name="content">
