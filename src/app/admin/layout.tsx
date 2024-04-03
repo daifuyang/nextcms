@@ -1,3 +1,5 @@
+"use client";
+
 import { Layout as AntdLayout } from "antd";
 
 import Root from "./ui/root";
@@ -8,6 +10,7 @@ import dynamic from "next/dynamic";
 
 import "./loading.css";
 import { headers } from "next/headers";
+import { usePathname } from "next/navigation";
 
 const AdminAuth = dynamic(() => import("@/components/adminAuth"), {
   loading: () => (
@@ -30,13 +33,11 @@ const AdminAuth = dynamic(() => import("@/components/adminAuth"), {
 });
 
 export default function Layout(props: any) {
-  const headersList = headers();
 
-  const nextUrl = headersList.get("next-url");
-  const { children } = props;
+  const {children} = props;
 
-
-  if (nextUrl === "/admin/login") {
+  const pathname = usePathname()
+  if (pathname === "/admin/login") {
     return children;
   }
 

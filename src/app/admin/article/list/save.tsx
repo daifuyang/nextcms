@@ -16,7 +16,7 @@ interface ModalFormProps {
   title: string;
 }
 
-export default function ModalSave() {
+export default function Save() {
   const [form] = Form.useForm<ModalFormProps>();
 
   const [title, setTitle] = useState<string>("新增文章");
@@ -57,7 +57,7 @@ export default function ModalSave() {
         />
       </ProForm.Item>
       <ProFormText
-        ieldProps={{
+        fieldProps={{
           style: { maxWidth: 288 }
         }}
         label="作者"

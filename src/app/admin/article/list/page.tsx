@@ -5,7 +5,7 @@ import { ProTable } from "@ant-design/pro-components";
 import { Divider, Space, Tag } from "antd";
 import { useRef } from "react";
 import { list } from "@/services/article";
-import ModalSave from "./modalSave";
+import Save from "./save";
 
 const columns: ProColumns<any>[] = [
   {
@@ -134,7 +134,7 @@ export default function List() {
           labelWidth: "auto"
         }}
         headerTitle="文章列表"
-        toolBarRender={() => [<ModalSave key="modalSave" />]}
+        toolBarRender={() => [<Save key="Save" />]}
       />
     </>
   );
