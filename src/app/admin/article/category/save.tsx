@@ -3,6 +3,8 @@ import {
   ModalForm,
   ProForm,
   ProFormDateRangePicker,
+  ProFormDigit,
+  ProFormRadio,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
@@ -19,24 +21,26 @@ interface FormProps {
 export default function Save() {
 
   const [form] = Form.useForm<FormProps>();
-  const [title, setTitle] = useState<string>("新增文章");
+  const [title, setTitle] = useState<string>("添加分类");
 
   return (
     <ModalForm<FormProps>
       title={title}
-      width={"60%"}
+      width={"40%"}
       trigger={
         <Button icon={<PlusOutlined />} type="primary">
           新建
         </Button>
       }
+      layout="horizontal"
+      labelCol={{ span: 4 }}
+      wrapperCol={{ span: 18 }}
       form={form}
-      autoFocusFirstInput
       modalProps={{
         destroyOnClose: true,
-        className:"modal-form"
       }}
       onFinish={async (values) => {
+        console.log('values', values)
         message.success("提交成功");
         return true;
       }}
@@ -45,32 +49,33 @@ export default function Save() {
         fieldProps={{
           style: { maxWidth: 288 }
         }}
-        label="分类"
-        name="categoryId"
+        label="父级分类"
+        name="parentId"
+        request={async () => {
+          return [{
+            label: '作为一级分类',
+            value: 0
+          }]
+        }}
       />
-      <ProFormText label="标题" name="title" />
-      <ProFormSelect label="标签" name="keywords" />
-      <ProFormDateRangePicker label="发布日期" name="published_time" />
-      <ProForm.Item label="封面" name="thumbnail">
+      <ProFormText label="名称" name="name" />
+      <ProFormText label="自定义url" name="alias" />
+      <ProForm.Item label="图标" name="icon">
         <Image
-          width={200}
+          width={80}
           src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
         />
       </ProForm.Item>
-      <ProFormText
-        fieldProps={{
-          style: { maxWidth: 288 }
-        }}
-        label="作者"
-        name="author"
+      <ProFormTextArea label="描述" name="description" />
+
+      <ProFormDigit label="排序" name="order" min={0} fieldProps={{ precision: 0 }} />
+
+      <ProFormRadio.Group
+        name="status"
+        label="状态"
+        initialValue={1}
+        options={[{ label: '启用', value: 1 }, { label: '禁用', value: 0 }]}
       />
-      <ProFormTextArea label="摘要" name="excerpt" />
-
-      <ProForm.Item label="详情" name="content">
-        <Editor />
-      </ProForm.Item>
-
-      <ProFormText label="自定义url" name="alias" />
     </ModalForm>
   );
 }

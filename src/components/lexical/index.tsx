@@ -45,7 +45,7 @@ export default function App() {
             ErrorBoundary={LexicalErrorBoundary}
           />
           <HistoryPlugin />
-          <AutoFocusPlugin />
+          {/* <AutoFocusPlugin /> */}
         </div>
       </div>
     </LexicalComposer>
