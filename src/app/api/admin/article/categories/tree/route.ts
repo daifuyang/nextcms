@@ -52,7 +52,10 @@ function dataToTree(data: TreeNode[]): TreeNode[] {
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
 
-  const where: any = {};
+  const where: any = {
+    deletedAt: null
+  }
+  
   const name = searchParams.get("name") || "";
   if (name) {
     where.name = {

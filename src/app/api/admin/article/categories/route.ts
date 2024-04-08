@@ -2,28 +2,34 @@ import prisma from "@/utils/prisma";
 import { NextRequest } from "next/server";
 import api from "@/utils/response";
 import getCurrentUser from "@/utils/user";
-import { count } from "console";
 import { isNumberEmpty } from "@/utils/validator";
 
-export async function categoryList(request: NextRequest) {
+export async function categories(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const current = parseInt(searchParams.get("current") || "1");
   const pageSize = parseInt(searchParams.get("pageSize") || "10");
 
   // 先获取所有的文章数量
-  const total = prisma.cmsArticleCategory.count();
+  const total = prisma.cmsArticleCategory.count({
+    where: {
+      deletedAt: null
+    }
+  });
 
   // 获取所有文章，分页
   const offset = (current - 1) * pageSize;
   const categories = await prisma.cmsArticleCategory.findMany({
     skip: offset,
-    take: pageSize
+    take: pageSize,
+    where: {
+      deletedAt: null
+    }
   });
 
   return api.success("获取成功！", { total, data: categories, current, pageSize });
 }
 
-export async function addCategory(request: NextRequest) {
+export async function addCategories(request: NextRequest) {
   const json = await request.json();
 
   const { parentId, name, description, icon, order, status } = json;
@@ -71,6 +77,6 @@ export async function addCategory(request: NextRequest) {
 }
 
 module.exports = {
-  GET: categoryList,
-  POST: addCategory
+  GET: categories,
+  POST: addCategories,
 };
