@@ -222,8 +222,9 @@ model cmsArticleCategory {
   seoKeywords    String?   @db.VarChar(255) // 三要素关键词，用于seo优化
   seoDescription String?   @db.VarChar(255) // 三要素描述，用于seo优化
   name           String    @db.VarChar(100)
-  description    String    @db.VarChar(255)
-  status         Boolean   @db.TinyInt()
+  icon           String?   @db.VarChar(255) // 分类图标 
+  description    String?   @db.VarChar(255)
+  status         Int?       @default(1) @db.TinyInt()
   count          Int // 文章数
   path           String    @db.VarChar(255)
   order          Int? // 排序

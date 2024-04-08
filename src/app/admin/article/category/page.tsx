@@ -1,13 +1,16 @@
 "use client";
 
-import React from "react";
-import { ProTable, ProColumns } from "@ant-design/pro-components";
-import { Divider, Space } from "antd";
+import React, { useRef } from "react";
+import { ProTable, ProColumns, ActionType } from "@ant-design/pro-components";
+import { Button, Divider, Popconfirm, Space, Typography } from "antd";
 import Save from './save'
-import { addArticleCategories } from "@/services/articleCategory";
+import { articleCategoriesTree } from "@/services/articleCategory";
+import { PlusOutlined } from "@ant-design/icons";
+
+const { Text, Link } = Typography;
 
 
-interface Category {
+interface ICategory {
   id: string; // 分类ID
   parentId: string | null; // 父级分类ID，默认为顶级分类
   name: string; // 分类名称
@@ -16,50 +19,27 @@ interface Category {
   count: number; // 文章数
 }
 
-const data: Category[] = [
-  {
-    id: "1",
-    parentId: null,
-    name: "科技",
-    description: "关于科技的文章分类",
-    status: "active",
-    count: 50
-  },
-  {
-    id: "2",
-    parentId: "1",
-    name: "人工智能",
-    description: "关于人工智能的文章分类",
-    status: "active",
-    count: 20
-  },
-  {
-    id: "3",
-    parentId: "1",
-    name: "区块链",
-    description: "关于区块链的文章分类",
-    status: "active",
-    count: 15
-  },
-  {
-    id: "4",
-    parentId: null,
-    name: "生活",
-    description: "关于生活的文章分类",
-    status: "active",
-    count: 30
-  }
-];
+// 状态枚举
+const statusEnum: any = {
+  active: 1,
+  inactive: 0
+}
 
-const category: React.FC = () => {
-  const columns: ProColumns<Category>[] = [
+const Category: React.FC = () => {
+
+  const ref = useRef<ActionType>();
+
+  const columns: ProColumns<ICategory>[] = [
     {
       title: "ID",
-      dataIndex: "id"
+      dataIndex: "id",
+      hideInSearch: true
     },
     {
       title: "父级ID",
-      dataIndex: "parentId"
+      dataIndex: "parentId",
+      hideInSearch: true,
+      hideInTable: true
     },
     {
       title: "名称",
@@ -67,59 +47,87 @@ const category: React.FC = () => {
     },
     {
       title: "描述",
-      dataIndex: "description"
+      dataIndex: "description",
+      hideInSearch: true
     },
     {
       title: "状态",
       dataIndex: "status",
       valueEnum: {
-        active: { text: "启用", status: "Success" },
-        inactive: { text: "停用", status: "Error" }
+        active: { text: "启用" },
+        inactive: { text: "停用" }
+      },
+      renderText: (record) => {
+        return record === 1 ? '启用' : '停用'
       }
     },
     {
       title: "文章数",
       dataIndex: "count",
-      sorter: (a, b) => a.count - b.count
+      hideInSearch: true
     },
     {
       title: "操作",
+      width: 220,
       valueType: "option",
       render: (_, record) => (
         <Space split={<Divider type="vertical" />}>
-          <a key="edit" onClick={() => {}}>
-            编辑
-          </a>
-          <a key="delete" onClick={() => {}}>
-            删除
-          </a>
+          <Save title="编辑分类" initialValues={record} onFinish={() => {
+            ref.current?.reload();
+          }}>
+            <a>
+              编辑
+            </a>
+          </Save>
+          <Save title="新建分类" initialValues={{ parentId: record.id }} onFinish={() => {
+            ref.current?.reload();
+          }}>
+            <a>
+              新建子分类
+            </a>
+          </Save>
+
+          <Popconfirm title="您确定删除吗？" onConfirm={() => {
+            ref.current?.reload();
+          }}>
+            <Text type="danger">
+              删除
+            </Text>
+          </Popconfirm>
+
         </Space>
       )
     }
   ];
 
   return (
-    <ProTable<Category>
+    <ProTable<ICategory>
+      actionRef={ref}
       headerTitle="文章分类"
-      request={async (params, sort, filter) => {
-        const res = await addArticleCategories(params);
-        if (res.code == 1) {
+      request={async (params: any, sort, filter) => {
+        params.status = params.status ? statusEnum[params.status] : ''
+        const res = await articleCategoriesTree(params);
+        if (res.code === 1) {
           return {
             success: true,
-            data: res.data
+            data: res.data,
           };
         }
         return {
           success: false
         };
       }}
+      pagination={false}
       search={{ labelWidth: "auto" }}
       columns={columns}
-      dataSource={data}
       rowKey="id"
-      toolBarRender={() => [<Save key="modalSave" />]}
+      toolBarRender={() => [<Save title="新建分类" onFinish={() => {
+        ref.current?.reload();
+      }} key="modalSave" ><Button icon={<PlusOutlined />} type="primary">
+          新建
+        </Button></Save>]}
     />
   );
 };
 
-export default category;
+export default Category;

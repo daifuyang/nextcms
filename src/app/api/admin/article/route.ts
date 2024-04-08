@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "@/utils/api";
-import api from '@/utils/response';
+import api from "@/utils/response";
 import prisma from "@/utils/prisma";
 
 export async function articleList(request: NextRequest) {
@@ -12,13 +12,13 @@ export async function articleList(request: NextRequest) {
   const total = prisma.cmsArticle.count();
 
   // 获取所有文章，分页
-  const offset = (current - 1) * pageSize
+  const offset = (current - 1) * pageSize;
   const articles = await prisma.cmsArticle.findMany({
     skip: offset,
-    take: pageSize,
-  })
-  
-  return api.success("获取成功！")
+    take: pageSize
+  });
+
+  return api.success("获取成功！", articles);
 }
 
 // 新增

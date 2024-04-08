@@ -2,35 +2,40 @@ import { PlusOutlined } from "@ant-design/icons";
 import {
   ModalForm,
   ProForm,
-  ProFormDateRangePicker,
   ProFormDigit,
   ProFormRadio,
-  ProFormSelect,
   ProFormText,
   ProFormTextArea,
   ProFormTreeSelect
 } from "@ant-design/pro-components";
 import { Button, Form, message, Image } from "antd";
 import { useState } from "react";
-import Editor from "@/components/lexical";
+import { addArticleCategories, articleCategoriesTree } from "@/services/articleCategory";
 
 interface FormProps {
   title: string;
 }
 
-export default function Save() {
+interface Props {
+  title: string;
+  onFinish?: () => void;
+  children: JSX.Element | undefined; // 或者具体的组件类型
+  initialValues?: any; // 根据实际情况指定类型
+}
+
+export default function Save(props: Props) {
+
+  const { onFinish, children, initialValues, title } = props
 
   const [form] = Form.useForm<FormProps>();
-  const [title, setTitle] = useState<string>("添加分类");
+
 
   return (
     <ModalForm<FormProps>
       title={title}
       width={"40%"}
       trigger={
-        <Button icon={<PlusOutlined />} type="primary">
-          新建
-        </Button>
+        children
       }
       layout="horizontal"
       labelCol={{ span: 4 }}
@@ -39,23 +44,45 @@ export default function Save() {
       modalProps={{
         destroyOnClose: true,
       }}
+      initialValues={initialValues}
       onFinish={async (values) => {
-        console.log('values', values)
-        message.success("提交成功");
-        return true;
+        const res = await addArticleCategories(values);
+        if (res.code === 1) {
+
+          if (onFinish) {
+            onFinish()
+          }
+
+          return true
+        }
+        message.error(res.msg);
+        return false;
       }}
     >
       <ProFormTreeSelect
         fieldProps={{
-          style: { maxWidth: 288 }
+          style: { maxWidth: 288 },
+          fieldNames: {
+            value: 'id',
+            label: 'name',
+          }
         }}
         label="父级分类"
         name="parentId"
         request={async () => {
-          return [{
-            label: '作为一级分类',
-            value: 0
-          }]
+
+          const res = await articleCategoriesTree();
+          if (res.code !== 1) {
+            message.error(res.msg);
+          }
+
+          return [
+            {
+              name: '作为一级分类',
+              id: 0
+            },
+            ...res.data
+          ]
         }}
       />
       <ProFormText label="名称" name="name" />

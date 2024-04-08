@@ -6,6 +6,8 @@ import axios, {
   InternalAxiosRequestConfig
 } from "axios";
 
+import { permanentRedirect } from "next/navigation";
+
 // 定义一个接口来表示 API 响应的数据结构
 interface ApiResponse {
   code: number;
@@ -48,6 +50,9 @@ class HttpClient {
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse<any, any>) => {
         // 对响应数据进行处理
+        if (response.data.code === -1) {
+          window.location.href = "/admin/login";
+        }
         return response;
       },
       (error: AxiosError) => {

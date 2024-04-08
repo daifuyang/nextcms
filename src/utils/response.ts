@@ -18,13 +18,23 @@ function error(msg: string, data: any = null) {
   return Response.json(json);
 }
 
+function errorWithCode(code: number,msg: string, data: any = null) {
+  json.code = code;
+  json.msg = msg;
+  json.data = data;
+  return Response.json(json);
+}
+
 export interface ApiResponse<T> {
   status: number;
   message: string;
   data: T;
 }
 
-export default {
+const api = {
   success,
-  error
+  error,
+  errorWithCode
 };
+
+export default api

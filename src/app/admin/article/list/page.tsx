@@ -58,7 +58,7 @@ const columns: ProColumns<any>[] = [
     },
     render: (_, record) => (
       <Space>
-        {record.labels.map(({ name, color }) => (
+        {record.labels.map(({ name, color }: any) => (
           <Tag color={color} key={name}>
             {name}
           </Tag>
@@ -94,10 +94,10 @@ const columns: ProColumns<any>[] = [
     key: "option",
     render: (text, record, _, action) => (
       <Space split={<Divider />}>
-        <a key="editable" onClick={() => {}}>
+        <a key="editable" onClick={() => { }}>
           编辑
         </a>
-        <a key="view" onClick={() => {}}>
+        <a key="view" onClick={() => { }}>
           查看
         </a>
       </Space>

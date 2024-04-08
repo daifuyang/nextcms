@@ -9,7 +9,7 @@ import Content from "./ui/content";
 import dynamic from "next/dynamic";
 
 import "./loading.css";
-import { headers } from "next/headers";
+
 import { usePathname } from "next/navigation";
 
 const AdminAuth = dynamic(() => import("@/components/adminAuth"), {

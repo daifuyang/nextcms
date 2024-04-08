@@ -2,7 +2,6 @@
 import Provider from "@/redux/provider";
 import { setUser } from "@/redux/slice/userState";
 import { getCurrentUser } from "@/services/user";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
@@ -12,7 +11,6 @@ function Layout({
   children: React.ReactNode;
 }>) {
   const dispatch = useDispatch();
-  const router = useRouter();
   useEffect(() => {
     const fetchUser = async () => {
       const res: any = await getCurrentUser();
@@ -20,10 +18,9 @@ function Layout({
         dispatch(setUser(res.data));
         return;
       }
-      router.push("/admin/login");
     };
     fetchUser();
-  }, [dispatch, router]);
+  }, [dispatch]);
   return children;
 }
 
