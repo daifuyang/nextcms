@@ -1,7 +1,7 @@
 import { request } from "@/utils/request";
 
 // 树列表
-export function articleCategoriesTree(params: any = {}) {
+export function getArticleCategoriesTree(params: any = {}) {
   return request.get("/api/admin/article/categories/tree", { params });
 }
 

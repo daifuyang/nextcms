@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { ProTable, ProColumns, ActionType } from "@ant-design/pro-components";
 import { Button, Divider, Popconfirm, Space, Typography, message } from "antd";
 import Save from './save'
-import { articleCategoriesTree, deleteCategory } from "@/services/articleCategory";
+import { getArticleCategoriesTree, deleteCategory } from "@/services/articleCategory";
 import { PlusOutlined } from "@ant-design/icons";
 
 const { Text, Link } = Typography;
@@ -111,7 +111,7 @@ const Category: React.FC = () => {
       headerTitle="文章分类"
       request={async (params: any, sort, filter) => {
         params.status = params.status ? statusEnum[params.status] : ''
-        const res = await articleCategoriesTree(params);
+        const res = await getArticleCategoriesTree(params);
         if (res.code === 1) {
           return {
             success: true,

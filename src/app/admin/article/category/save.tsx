@@ -8,7 +8,7 @@ import {
   ProFormTreeSelect
 } from "@ant-design/pro-components";
 import { Form, message, Image } from "antd";
-import { addArticleCategory, getArticleCategory, updateArticleCategory, articleCategoriesTree } from "@/services/articleCategory";
+import { addArticleCategory, getArticleCategory, updateArticleCategory, getArticleCategoriesTree } from "@/services/articleCategory";
 import { useEffect, useState } from "react";
 
 interface FormProps {
@@ -96,7 +96,7 @@ export default function Save(props: Props) {
         name="parentId"
         request={async () => {
 
-          const res = await articleCategoriesTree();
+          const res = await getArticleCategoriesTree();
           if (res.code !== 1) {
             message.error(res.msg);
           }
@@ -109,8 +109,9 @@ export default function Save(props: Props) {
             ...res.data
           ]
         }}
+        rules={[{ required: true, message: '请选择父级分类' }]}
       />
-      <ProFormText label="名称" name="name" />
+      <ProFormText label="名称" name="name" rules={[{required: true, message: '名称不能为空'}]} />
       <ProFormText label="自定义url" name="alias" />
       <ProForm.Item label="图标" name="icon">
         <Image
@@ -127,6 +128,7 @@ export default function Save(props: Props) {
         label="状态"
         initialValue={1}
         options={[{ label: '启用', value: 1 }, { label: '禁用', value: 0 }]}
+        rules={[{required: true, message: '状态不能为空'}]} 
       />
     </ModalForm>
   );

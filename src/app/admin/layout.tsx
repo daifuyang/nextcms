@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import "./loading.css";
 
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 const AdminAuth = dynamic(() => import("@/components/adminAuth"), {
   loading: () => (
@@ -37,6 +38,13 @@ export default function Layout(props: any) {
   const {children} = props;
 
   const pathname = usePathname()
+
+  useEffect( () => {
+    
+    window.cdn = window.location.origin + '/'
+
+  } ,[])
+
   if (pathname === "/admin/login") {
     return children;
   }
