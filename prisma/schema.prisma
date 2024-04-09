@@ -248,13 +248,3 @@ model cmsArticleCategoryPost {
 
   @@map("cms_article_category_post")
 }
-
-// 定义资源文件
-model cmsAssets {
-  id        Int      @id @default(autoincrement())
-  fileName  String   @map("file_name")
-  filePath  String   @map("file_path")
-  md5       String
-  sha1      String
-  createdAt DateTime @default(now()) @map("created_at")
-}
