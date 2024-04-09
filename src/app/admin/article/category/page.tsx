@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { ProTable, ProColumns, ActionType } from "@ant-design/pro-components";
 import { Button, Divider, Popconfirm, Space, Typography, message } from "antd";
 import Save from './save'
-import { articleCategoriesTree, deleteCategories } from "@/services/articleCategory";
+import { articleCategoriesTree, deleteCategory } from "@/services/articleCategory";
 import { PlusOutlined } from "@ant-design/icons";
 
 const { Text, Link } = Typography;
@@ -88,7 +88,7 @@ const Category: React.FC = () => {
           </Save>
 
           <Popconfirm title="您确定删除吗？" onConfirm={ async () => {
-            const res = await deleteCategories(record.id)
+            const res = await deleteCategory(record.id)
             if(res.code === 1) {
               ref.current?.reload();
               return

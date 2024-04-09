@@ -1,4 +1,3 @@
-import { PlusOutlined } from "@ant-design/icons";
 import {
   ModalForm,
   ProForm,
@@ -8,9 +7,9 @@ import {
   ProFormTextArea,
   ProFormTreeSelect
 } from "@ant-design/pro-components";
-import { Button, Form, message, Image } from "antd";
-import { useState } from "react";
-import { addArticleCategories, articleCategoriesTree } from "@/services/articleCategory";
+import { Form, message, Image } from "antd";
+import { addArticleCategory, getArticleCategory, updateArticleCategory, articleCategoriesTree } from "@/services/articleCategory";
+import { useEffect, useState } from "react";
 
 interface FormProps {
   title: string;
@@ -27,7 +26,20 @@ export default function Save(props: Props) {
 
   const { onFinish, children, initialValues, title } = props
 
+  const [open, setOpen] = useState(false)
+
   const [form] = Form.useForm<FormProps>();
+
+
+  useEffect(() => {
+    if (form && initialValues?.id && open) {
+      getArticleCategory(initialValues.id).then((res) => {
+        if (res.code === 1) {
+          form.setFieldsValue(res.data)
+        }
+      })
+    }
+  }, [form, initialValues?.id, open])
 
 
   return (
@@ -37,6 +49,10 @@ export default function Save(props: Props) {
       trigger={
         children
       }
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open)
+      }}
       layout="horizontal"
       labelCol={{ span: 4 }}
       wrapperCol={{ span: 18 }}
@@ -45,8 +61,14 @@ export default function Save(props: Props) {
         destroyOnClose: true,
       }}
       initialValues={initialValues}
-      onFinish={async (values) => {
-        const res = await addArticleCategories(values);
+      onFinish={async (values: any) => {
+        const { id = 0 } = values
+        let res = null
+        if (id > 0) {
+          res = await updateArticleCategory(id, values);
+        } else {
+          res = await addArticleCategory(values);
+        }
         if (res.code === 1) {
 
           if (onFinish) {
@@ -59,6 +81,9 @@ export default function Save(props: Props) {
         return false;
       }}
     >
+
+      <ProFormText name="id" hidden />
+
       <ProFormTreeSelect
         fieldProps={{
           style: { maxWidth: 288 },
