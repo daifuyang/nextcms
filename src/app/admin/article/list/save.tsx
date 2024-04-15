@@ -13,6 +13,7 @@ import { Button, Form, message } from "antd";
 import { getArticleCategoriesTree } from "@/services/articleCategory";
 import Editor from "@/components/lexical";
 import MyUpload from "@/components/uoload";
+import { addArticle } from "@/services/article";
 
 interface ModalFormProps {
   title: string;
@@ -38,7 +39,12 @@ export default function Save() {
         destroyOnClose: true
       }}
       onFinish={async (values) => {
-        message.success("提交成功");
+        const res = await addArticle(values);
+        if (res.code !== 1) {
+          message.error(res.msg);
+          return false;
+        }
+        message.success(res.msg);
         return true;
       }}
     >

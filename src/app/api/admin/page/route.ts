@@ -1,5 +1,5 @@
 import { type NextRequest } from "next/server";
-import prisma from "@/model";
+import prisma from "@/utils/prisma";
 import { apiHandler, success, error } from "@/utils/api";
 import _ from "lodash";
 import path from "path";
@@ -100,7 +100,7 @@ export async function addPage(request: NextRequest) {
   });
 
   // 存入日志表中
-  await prisma.cmsPagelog.create({
+  await prisma.cmsPageLog.create({
     data: {
       title,
       description,

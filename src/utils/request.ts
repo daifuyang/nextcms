@@ -6,8 +6,6 @@ import axios, {
   InternalAxiosRequestConfig
 } from "axios";
 
-import { permanentRedirect } from "next/navigation";
-
 // 定义一个接口来表示 API 响应的数据结构
 interface ApiResponse {
   code: number;

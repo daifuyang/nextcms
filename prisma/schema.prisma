@@ -41,7 +41,7 @@ model cmsPageLog {
   creator     String   @map(name: "creator") @db.VarChar(50)
   createdAt   DateTime @default(now()) @map(name: "created_at")
 
-  @@map("cms_pagelog")
+  @@map("cms_page_log")
 }
 
 // 导航关联页面
@@ -184,7 +184,7 @@ model cmsResourceCategory {
 // 文章表
 model cmsArticle {
   id             Int       @id @default(autoincrement()) @map("id")
-  postFormat     Int       @map("post_format") @db.TinyInt() // 文章格式
+  postFormat     Int?      @default(1) @map("post_format") @db.TinyInt() // 文章格式
   seoTitle       String?   @map("seo_title") @db.VarChar(100) // 三要素标题，用于seo优化
   seoKeywords    String?   @map("seo_keywords") @db.VarChar(255) // 三要素关键词，用于seo优化
   seoDescription String?   @map("seo_description") @db.VarChar(255) // 三要素描述，用于seo优化
@@ -194,15 +194,16 @@ model cmsArticle {
   keywords       String?   @map("keywords") @db.VarChar(255) // 关键词
   excerpt        String?   @map("excerpt") @db.VarChar(255) // 摘要
   source         String?   @map("source") @db.VarChar(255) // 文章来源
-  isTop          Int       @map("is_top") @db.TinyInt() // 置顶
-  hits           Int       @map("hits") // 点击数
-  favorites      Int       @map("favorites") // 收藏数
-  Like           Int       @map("like") // 点赞数
-  Comment        Int       @map("comment") // 点赞数
+  isTop          Int?      @map("is_top") @db.TinyInt() // 置顶
+  hits           Int?      @map("hits") // 点击数
+  favorites      Int?      @map("favorites") // 收藏数
+  Like           Int?      @map("like") // 点赞数
+  Comment        Int?      @map("comment") // 点赞数
   more           Json?     @map("more") @db.Json // 扩展属性
-  articleStatus  Boolean   @default(true) @map("article_status") // 文章状态
-  commentStatus  Boolean   @default(true) @map("comment_status") // 评论状态
+  articleStatus  Int?      @default(1) @map("article_status") @db.TinyInt // 文章状态
+  commentStatus  Int?      @default(1) @map("comment_status") @db.TinyInt // 评论状态
   order          Int?      @map("order") // 排序
+  publishedTime  DateTime? @map("published_time") // 发布时间
   createId       Int       @map("create_id")
   creator        String    @map("creator") @db.VarChar(50)
   updateId       Int       @map("update_id")
@@ -242,7 +243,7 @@ model cmsArticleCategory {
 // 文章和分类关联表
 model cmsArticleCategoryPost {
   id         Int  @id @default(autoincrement()) @map("id")
-  postId     Int  @map("post_id") // 文章id
+  articleId     Int  @map("article_id") // 文章id
   categoryId Int  @map("category_id") //分类id
   order      Int? @map("order") // 排序
 

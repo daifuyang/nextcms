@@ -22,7 +22,6 @@ export default function Login() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res: any = await login(formData)
-    console.log('res',res)
     if (res.code === 1) {
       const token = JSON.stringify(res.data);
       localStorage.setItem("token", token);

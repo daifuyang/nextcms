@@ -43,6 +43,7 @@ import FloatingLinkEditorPlugin from './plugins/FloatingLinkEditorPlugin';
 import FloatingTextFormatToolbarPlugin from './plugins/FloatingTextFormatToolbarPlugin';
 import CodeActionMenuPlugin from './plugins/CodeActionMenuPlugin';
 import { $generateHtmlFromNodes } from '@lexical/html';
+import { InitialStatePlugin } from './plugins/InitialStatePlugin';
 
 function Placeholder() {
   return <div className="editor-placeholder">请输入文本内容</div>;
@@ -59,8 +60,8 @@ const editorConfig = {
 };
 
 interface Props {
-  value: string;
-  onChange: (html: string) => void;
+  value?: string;
+  onChange?: (html: string) => void;
 }
 
 export default function App(props: Props) {
@@ -139,13 +140,13 @@ export default function App(props: Props) {
           <LinkPlugin />
           <HorizontalRulePlugin />
           <PageBreakPlugin />
-          {/* <InitialStatePlugin initialValue={value} /> */}
+          <InitialStatePlugin initialValue={value} />
           <OnChangePlugin onChange={(editorState, editor) => {
             // 获取html
-           editor.update( () => {
-            const htmlString = $generateHtmlFromNodes(editor)
-            console.log('htmlString',htmlString)
-            } )
+            const htmlString = editorState.read(() => $generateHtmlFromNodes(editor))
+            if (onChange) {
+              onChange(htmlString)
+            }
           }} />
           {floatingAnchorElem && !isSmallWidthViewport && (
             <>

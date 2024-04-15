@@ -12,3 +12,21 @@ export function getFileSchema(filePath: string) {
     return null;
   }
 }
+
+export function escapeHTML(html: string) {
+  return html
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/'/g, "&apos;")
+    .replace(/"/g, "&quot;");
+}
+
+export function decodeEntities(encodedString: string) {
+  return encodedString
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&");
+}

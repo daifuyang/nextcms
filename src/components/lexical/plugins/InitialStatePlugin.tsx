@@ -18,19 +18,19 @@ export function InitialStatePlugin({
 }): null {
     const [editor] = useLexicalComposerContext();
 
-    // useLayoutEffect(() => {
-    //     if (editor && initialValue) {
-    //         editor.update(() => {
-    //             const parser = new DOMParser();
-    //             const dom = parser.parseFromString(initialValue, "text/html");
-    //             const nodes = $generateNodesFromDOM(editor, dom);
-    //             $getRoot().select();
+    useLayoutEffect(() => {
+        if (editor && initialValue) {
+            editor.update(() => {
+                const parser = new DOMParser();
+                const dom = parser.parseFromString(initialValue, "text/html");
+                const nodes = $generateNodesFromDOM(editor, dom);
+                $getRoot().select();
 
-    //             // Insert them at a selection.
-    //             $insertNodes(nodes);
-    //         })
-    //     }
-    // }, [])
+                // Insert them at a selection.
+                $insertNodes(nodes);
+            })
+        }
+    }, [])
 
     return null;
 }
