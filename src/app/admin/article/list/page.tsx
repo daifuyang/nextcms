@@ -4,7 +4,7 @@ import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
 import { Divider, Space, Tag } from "antd";
 import { useRef } from "react";
-import { getArticles } from "@/services/article";
+import { getArticles } from "@/services/admin/article";
 import Save from "./save";
 
 const columns: ProColumns<any>[] = [

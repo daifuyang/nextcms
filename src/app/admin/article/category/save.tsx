@@ -8,7 +8,7 @@ import {
   ProFormTreeSelect
 } from "@ant-design/pro-components";
 import { Form, message, Image } from "antd";
-import { addArticleCategory, getArticleCategory, updateArticleCategory, getArticleCategoriesTree } from "@/services/articleCategory";
+import { addArticleCategory, getArticleCategory, updateArticleCategory, getArticleCategoriesTree } from "@/services/admin/articleCategory";
 import { useEffect, useState } from "react";
 
 interface FormProps {

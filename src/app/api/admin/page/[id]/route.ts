@@ -4,19 +4,7 @@ import prisma from "@/utils/prisma";
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
-import { getFileSchema } from "@/utils/util";
-
-const assignSchema = (schema: any, publicSchema: any, position: "start" | "end" = "end") => {
-  if (publicSchema) {
-    if (position == "start") {
-      schema.children = schema.children?.filter((n: any) => n.componentName !== "Header");
-      schema.children.unshift(publicSchema);
-    } else {
-      schema.children = schema.children?.filter((n: any) => n.componentName !== "Footer");
-      schema.children.push(publicSchema);
-    }
-  }
-};
+import { getFileSchema, assignSchema } from "@/utils/util";
 
 export async function show(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
@@ -44,7 +32,7 @@ export async function show(request: NextRequest, { params }: { params: { id: str
 
   const page: any = await prisma.cmsPage.findFirst({
     where: {
-      id: Number(id),
+      id: Number(id)
     }
   });
 
@@ -159,7 +147,7 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
 
     fs.writeFileSync(file, newSchema);
 
-    console.log('tx',tx)
+    console.log("tx", tx);
 
     page = await tx.cmsPage.create({
       data: {
@@ -174,7 +162,6 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
         updater: "admin"
       }
     });
-
   } else if (oldSchema !== newSchema) {
     version = page.version + 1;
     filePath = `schema/${type}-${version}.json`;
@@ -209,5 +196,5 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
 
 module.exports = {
   GET: apiHandler(show),
-  PUT: update,
+  PUT: update
 };

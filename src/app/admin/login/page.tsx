@@ -4,7 +4,7 @@ import { FormEvent, ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { message } from "antd";
-import { login } from "@/services/user";
+import { login } from "@/services/admin/user";
 
 export default function Login() {
   const router = useRouter();

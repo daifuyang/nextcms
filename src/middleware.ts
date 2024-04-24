@@ -10,7 +10,6 @@ export async function middleware(request: NextRequest) {
   const { pathname, origin } = request.nextUrl;
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("next-url", pathname);
-
   if (pathname.startsWith("/api/admin") && !excludePaths.includes(pathname)) {
     // 获取token
     const authorization = requestHeaders.get("authorization") || "";

@@ -1,6 +1,18 @@
 import path from "path";
 import fs from "fs";
 
+export function assignSchema(schema: any, publicSchema: any, position: "start" | "end" = "end") {
+  if (publicSchema) {
+    if (position == "start") {
+      schema.children = schema.children?.filter((n: any) => n.componentName !== "Header");
+      schema.children.unshift(publicSchema);
+    } else {
+      schema.children = schema.children?.filter((n: any) => n.componentName !== "Footer");
+      schema.children.push(publicSchema);
+    }
+  }
+}
+
 export function getFileSchema(filePath: string) {
   // 读取本地schema文件
   if (filePath) {

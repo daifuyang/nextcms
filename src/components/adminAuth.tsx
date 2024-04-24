@@ -1,7 +1,7 @@
 "use client";
 import Provider from "@/redux/provider";
 import { setUser } from "@/redux/slice/userState";
-import { getCurrentUser } from "@/services/user";
+import { getCurrentUser } from "@/services/admin/user";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 

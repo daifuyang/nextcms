@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import { ProTable, ProColumns, ActionType } from "@ant-design/pro-components";
 import { Button, Divider, Popconfirm, Space, Typography, message } from "antd";
 import Save from './save'
-import { getArticleCategoriesTree, deleteCategory } from "@/services/articleCategory";
+import { getArticleCategoriesTree, deleteCategory } from "@/services/admin/articleCategory";
 import { PlusOutlined } from "@ant-design/icons";
 
 const { Text, Link } = Typography;

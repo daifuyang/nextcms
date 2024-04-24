@@ -10,10 +10,10 @@ import {
   ProFormTreeSelect
 } from "@ant-design/pro-components";
 import { Button, Form, message } from "antd";
-import { getArticleCategoriesTree } from "@/services/articleCategory";
+import { getArticleCategoriesTree } from "@/services/admin/articleCategory";
 import Editor from "@/components/lexical";
 import MyUpload from "@/components/uoload";
-import { addArticle } from "@/services/article";
+import { addArticle } from "@/services/admin/article";
 
 interface ModalFormProps {
   title: string;

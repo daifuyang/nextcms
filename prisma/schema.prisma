@@ -243,9 +243,18 @@ model cmsArticleCategory {
 // 文章和分类关联表
 model cmsArticleCategoryPost {
   id         Int  @id @default(autoincrement()) @map("id")
-  articleId     Int  @map("article_id") // 文章id
+  articleId  Int  @map("article_id") // 文章id
   categoryId Int  @map("category_id") //分类id
   order      Int? @map("order") // 排序
 
   @@map("cms_article_category_post")
+}
+
+// 系统配置表
+model systemConfig {
+  id    Int    @id @default(autoincrement()) @map("id")
+  key   String @map("key") @db.VarChar(50)
+  value String @map("value") @db.VarChar(255)
+
+  @@map("system_config")
 }
