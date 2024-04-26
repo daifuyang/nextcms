@@ -83,8 +83,9 @@ class HttpClient {
 }
 
 let baseURL = '/'
-if (typeof global !== 'undefined') {
+if (typeof window === 'undefined') {
   baseURL = `http://localhost:${process.env.PORT}`
 }
+
 const request = new HttpClient(baseURL);
 export { request };
