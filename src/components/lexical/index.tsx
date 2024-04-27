@@ -5,12 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin';
-import {LexicalComposer} from '@lexical/react/LexicalComposer';
-import {ContentEditable} from '@lexical/react/LexicalContentEditable';
+import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
-import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
-import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { $generateHtmlFromNodes } from '@lexical/html';
+
 import * as React from 'react';
 
 import Theme from './theme';
@@ -33,7 +36,7 @@ const editorConfig = {
   theme: Theme,
 };
 
-export default function App() {
+export default function App({ value, onChange }) {
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="editor-container">

@@ -38,6 +38,7 @@ export default function Save() {
         destroyOnClose: true
       }}
       onFinish={async (values) => {
+        console.log('values',values);
         message.success("提交成功");
         return true;
       }}

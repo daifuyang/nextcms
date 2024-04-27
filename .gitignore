@@ -7,3 +7,4 @@ tmp/
 temp/
 schema/
 prisma/migrations/
+public/upload/
