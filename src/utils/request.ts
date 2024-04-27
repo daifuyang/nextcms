@@ -6,8 +6,6 @@ import axios, {
   InternalAxiosRequestConfig
 } from "axios";
 
-import { permanentRedirect } from "next/navigation";
-
 // 定义一个接口来表示 API 响应的数据结构
 interface ApiResponse {
   code: number;
@@ -30,12 +28,13 @@ class HttpClient {
     this.axiosInstance.interceptors.request.use(
       (config: InternalAxiosRequestConfig<any>) => {
         // 在请求发送前可以进行一些操作
-
-        const str = localStorage.getItem("token");
-        // 如果token存在，则将其添加到请求头的Authorization字段中
-        if (str) {
-          const token = JSON.parse(str);
-          config.headers.Authorization = `Bearer ${token.accessToken}`;
+        if (typeof window !== 'undefined') {
+          const str = localStorage.getItem("token");
+          // 如果token存在，则将其添加到请求头的Authorization字段中
+          if (str) {
+            const token = JSON.parse(str);
+            config.headers.Authorization = `Bearer ${token.accessToken}`;
+          }
         }
 
         return config;
@@ -83,5 +82,10 @@ class HttpClient {
   }
 }
 
-const request = new HttpClient("/");
+let baseURL = '/'
+if (typeof window === 'undefined') {
+  baseURL = `http://localhost:${process.env.PORT}`
+}
+
+const request = new HttpClient(baseURL);
 export { request };

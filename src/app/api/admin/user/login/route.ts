@@ -30,9 +30,9 @@ async function login(request: Request) {
   if (!isMatch) {
     return api.error("账号或密码不正确！");
   } else {
-    const accessToken = jwt.sign({ userId: user.id }, "secret", { expiresIn: "1d" });
+    const accessToken = jwt.sign({ userId: user.id }, "secret", { expiresIn: "7d" });
     const refreshToken = jwt.sign({ userId: user.id }, "refreshSecret", { expiresIn: "7d" }); // 7天过期
-    const expiry = dayjs().add(1, "day").toDate();
+    const expiry = dayjs().add(7, "day").toDate();
 
     const token = {
       accessToken,

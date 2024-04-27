@@ -1,23 +1,10 @@
 import { type NextRequest } from "next/server";
 import { apiHandler, success, error } from "@/utils/api";
-import prisma from "@/model";
+import prisma from "@/utils/prisma";
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
-import { getFileSchema } from "@/utils/util";
-
-const assignSchema = (schema: any, publicSchema: any, position: "start" | "end" = "end") => {
-  if (publicSchema) {
-    if (position == "start") {
-      schema.children = schema.children?.filter((n: any) => n.componentName !== "Header");
-      console.log('schema.children',schema.children)
-      schema.children.unshift(publicSchema);
-    } else {
-      schema.children = schema.children?.filter((n: any) => n.componentName !== "Footer");
-      schema.children.push(publicSchema);
-    }
-  }
-};
+import { getFileSchema, assignSchema } from "@/utils/util";
 
 export async function show(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
@@ -45,7 +32,7 @@ export async function show(request: NextRequest, { params }: { params: { id: str
 
   const page: any = await prisma.cmsPage.findFirst({
     where: {
-      id: Number(id),
+      id: Number(id)
     }
   });
 
@@ -120,7 +107,7 @@ export async function update(request: NextRequest, { params }: { params: { id: s
     });
 
     // 存入日志表中
-    await tx.cmsPagelog.create({
+    await tx.cmsPageLog.create({
       data: {
         title,
         description,
@@ -160,6 +147,8 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
 
     fs.writeFileSync(file, newSchema);
 
+    console.log("tx", tx);
+
     page = await tx.cmsPage.create({
       data: {
         title: type == "header" ? "公共页头" : "公共页脚",
@@ -192,7 +181,7 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
   }
 
   // 存入日志表中
-  await tx.cmsPagelog.create({
+  await tx.cmsPageLog.create({
     data: {
       title: type == "header" ? "公共页头" : "公共页脚",
       description: "header" ? "公共页头" : "公共页脚",
@@ -207,5 +196,5 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
 
 module.exports = {
   GET: apiHandler(show),
-  POST: apiHandler(update)
+  PUT: update
 };

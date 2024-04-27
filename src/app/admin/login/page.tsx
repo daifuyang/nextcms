@@ -4,7 +4,7 @@ import { FormEvent, ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { message } from "antd";
-import { login } from "@/services/user";
+import { login } from "@/services/admin/user";
 
 export default function Login() {
   const router = useRouter();
@@ -22,7 +22,6 @@ export default function Login() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const res: any = await login(formData)
-    console.log('res',res)
     if (res.code === 1) {
       const token = JSON.stringify(res.data);
       localStorage.setItem("token", token);
