@@ -1,5 +1,5 @@
 import { type NextRequest } from "next/server";
-import { apiHandler, success, error } from "@/utils/api";
+import { success, error } from "@/utils/api";
 import prisma from "@/utils/prisma";
 import path from "path";
 import fs from "fs";
@@ -195,6 +195,6 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
 }
 
 module.exports = {
-  GET: apiHandler(show),
+  GET: show,
   PUT: update
 };

@@ -11,8 +11,6 @@ export async function GET(request: Request, { params }: { params: { key: string 
         }
     })
 
-    if(config) {
-        return success("获取成功！",config)
-    }
+    return success("获取成功！",config)
     
 }

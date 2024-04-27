@@ -12,7 +12,7 @@ export default async function Home() {
     throw(configRes.msg)
   }
 
-  const homeId = configRes.data.value
+  const homeId = configRes.data?.value || 1
   const res = await getPage(homeId)
   if(res.code === 0) {
     notFound()
