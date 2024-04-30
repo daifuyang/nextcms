@@ -13,6 +13,16 @@ interface ApiResponse {
   data: any;
 }
 
+let baseURL = '/'
+if (typeof window === 'undefined') {
+  baseURL = `http://localhost:${process.env.PORT}`
+}
+
+export const instance =  axios.create({
+  baseURL,
+  timeout: 10000 // 请求超时时间
+});
+
 // 创建一个封装了 Axios 的类
 class HttpClient {
   private axiosInstance: AxiosInstance;
@@ -61,6 +71,10 @@ class HttpClient {
     );
   }
 
+  instance(config: AxiosRequestConfig<any>) {
+    return this.axiosInstance(config);
+  }
+
   // 封装 GET 请求
   get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse> {
     return this.axiosInstance.get<ApiResponse>(url, config).then((response) => response.data);
@@ -82,10 +96,26 @@ class HttpClient {
   }
 }
 
-let baseURL = '/'
-if (typeof window === 'undefined') {
-  baseURL = `http://localhost:${process.env.PORT}`
-}
 
 const request = new HttpClient(baseURL);
+
+
+export function createAxiosFetchHandler(config?: Record<string, unknown>) {
+  return async function (options: any) {
+    const requestConfig: any = {
+      ...options,
+      url: options.uri,
+      method: options.method,
+      data: options.params,
+      headers: options.headers,
+      ...config
+    };
+    const response = await request.instance(requestConfig);
+    if(response.status === 200) {
+      return response.data;
+    }
+    return response;
+  };
+}
+
 export { request };

@@ -82,15 +82,19 @@ export async function update(request: NextRequest, { params }: { params: { id: s
   const key = page.id;
   const filePath = `schema/page-${key}-${nextVersion}.json`;
   const file = path.resolve(process.cwd(), filePath);
+  try {
+    
   await prisma.$transaction(async (tx: any) => {
     // 获取公共页头和公共页脚
+
     let headerSchema: any = schema?.children?.find((n: any) => n.componentName === "Header");
     // 查询头页面是否存在
-    savePublicPage("header", headerSchema, tx);
+    await savePublicPage("header", headerSchema, tx);
+
+    // return
 
     let footerSchema: any = schema?.children?.find((n: any) => n.componentName === "Footer");
-    savePublicPage("footer", footerSchema, tx);
-
+    await savePublicPage("footer", footerSchema, tx);
     fs.writeFileSync(file, JSON.stringify(schema));
 
     // 更新页面
@@ -107,7 +111,7 @@ export async function update(request: NextRequest, { params }: { params: { id: s
     });
 
     // 存入日志表中
-    await tx.cmsPageLog.create({
+    return await tx.cmsPageLog.create({
       data: {
         title,
         description,
@@ -119,6 +123,9 @@ export async function update(request: NextRequest, { params }: { params: { id: s
       }
     });
   });
+} catch (error) {
+    console.log('error',error)
+}
   return success("更新成功！", page);
 }
 
@@ -147,8 +154,6 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
 
     fs.writeFileSync(file, newSchema);
 
-    console.log("tx", tx);
-
     page = await tx.cmsPage.create({
       data: {
         title: type == "header" ? "公共页头" : "公共页脚",
@@ -162,6 +167,7 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
         updater: "admin"
       }
     });
+
   } else if (oldSchema !== newSchema) {
     version = page.version + 1;
     filePath = `schema/${type}-${version}.json`;
