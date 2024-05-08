@@ -1,7 +1,6 @@
-import { getPage } from "@/model/page";
+import { getPage, getPageSchema } from "@/model/page";
 import { error, success } from "@/utils/api";
-import prisma from "@/utils/prisma";
-import { assignSchema, getFileSchema } from "@/utils/util";
+import { assignSchema } from "@/utils/util";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -18,7 +17,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
   });
 
-  const headerSchema = getFileSchema(header?.filePath);
+  const headerSchema = await getPageSchema(header?.filePath);
 
   const footer: any = await getPage({
     where: {
@@ -26,7 +25,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     }
   });
 
-  const footerSchema = getFileSchema(footer?.filePath);
+  const footerSchema = await getPageSchema(footer?.filePath);
   const page: any = await getPage({
     where: {
       id: Number(id)
@@ -39,7 +38,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   // 读取本地schema文件
   const filePath = page?.filePath;
-  let schema = getFileSchema(filePath);
+  let schema = await getPageSchema(filePath);
   assignSchema(schema, headerSchema, "start");
   assignSchema(schema, footerSchema);
 

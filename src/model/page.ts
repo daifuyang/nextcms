@@ -7,6 +7,7 @@
 import prisma from "@/utils/prisma";
 import redis from "@/utils/redis";
 import api from "@/utils/response";
+import { getFileSchema } from "@/utils/util";
 import { cmsPage } from "@prisma/client";
 
 interface PageListParams {
@@ -108,4 +109,20 @@ export async function getPageById(id: number) {
     }
   }
   return page;
+}
+
+// 获取本地schema文件
+export async function getPageSchema(filePath: string) {
+  const key = `nextcms:file:${filePath}`;
+  let pageSchema: any = null;
+  const cache = await redis.get(key);
+  if (cache) {
+    pageSchema = JSON.parse(cache);
+  } else {
+    pageSchema = getFileSchema(filePath);
+    if (pageSchema) {
+      redis.set(key, JSON.stringify(pageSchema));
+    }
+  }
+  return pageSchema
 }
