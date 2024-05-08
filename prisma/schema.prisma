@@ -12,125 +12,125 @@ datasource db {
 
 // 低代码页面存储
 model cmsPage {
-  id          Int       @id @default(autoincrement()) @map(name: "id")
-  title       String    @map(name: "title") @db.VarChar(50)
-  description String?   @map(name: "description") @db.VarChar(200)
-  filePath    String?   @map(name: "file_path") @db.VarChar(255)
-  type        String    @default("page") @map(name: "type") @db.VarChar(10) // page article product header footer
-  version     Int       @map(name: "version")
-  createId    Int       @map(name: "create_id")
-  creator     String    @map(name: "creator") @db.VarChar(50)
-  updateId    Int       @map(name: "update_id")
-  updater     String    @map(name: "updater") @db.VarChar(50)
-  createdAt   DateTime  @default(now()) @map(name: "created_at")
-  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
-  deletedAt   DateTime? @map(name: "deleted_at")
+  id          Int     @id @default(autoincrement()) @map(name: "id")
+  title       String  @map(name: "title") @db.VarChar(50)
+  description String? @map(name: "description") @db.VarChar(200)
+  filePath    String? @map(name: "file_path") @db.VarChar(255)
+  type        String  @default("page") @map(name: "type") @db.VarChar(10) // page article product header footer
+  version     Int     @map(name: "version")
+  createId    Int     @map(name: "create_id")
+  creator     String  @map(name: "creator") @db.VarChar(50)
+  updateId    Int     @map(name: "update_id")
+  updater     String  @map(name: "updater") @db.VarChar(50)
+  createdAt   Int  @map(name: "created_at")
+  updatedAt   Int  @map(name: "updated_at")
+  deletedAt   Int  @default(0) @map(name: "deleted_at")
 
   @@map("cms_page")
 }
 
 // 页面版本日志表
 model cmsPageLog {
-  id          Int      @id @default(autoincrement()) @map(name: "id")
-  title       String   @map(name: "title") @db.VarChar(50)
-  description String?  @map(name: "description") @db.VarChar(200)
-  filePath    String?  @map(name: "file_path") @db.VarChar(255)
-  type        String   @default("page") @map(name: "type") @db.VarChar(10) // page article product header footer
-  version     Int      @map(name: "version")
-  createId    Int      @map(name: "create_id")
-  creator     String   @map(name: "creator") @db.VarChar(50)
-  createdAt   DateTime @default(now()) @map(name: "created_at")
+  id          Int     @id @default(autoincrement()) @map(name: "id")
+  title       String  @map(name: "title") @db.VarChar(50)
+  description String? @map(name: "description") @db.VarChar(200)
+  filePath    String? @map(name: "file_path") @db.VarChar(255)
+  type        String  @default("page") @map(name: "type") @db.VarChar(10) // page article product header footer
+  version     Int     @map(name: "version")
+  createId    Int     @map(name: "create_id")
+  creator     String  @map(name: "creator") @db.VarChar(50)
+  createdAt   Int  @map("created_at")
 
   @@map("cms_page_log")
 }
 
 // 导航关联页面
 model cmsNav {
-  id          Int       @id @default(autoincrement()) @map(name: "id")
-  title       String    @map(name: "title") @db.VarChar(50)
-  description String?   @map(name: "description") @db.VarChar(200)
-  createId    Int       @map(name: "create_id")
-  creator     String    @map(name: "creator") @db.VarChar(200)
-  updateId    Int       @map(name: "update_id")
-  updater     String    @map(name: "updater") @db.VarChar(50)
-  createdAt   DateTime  @default(now()) @map(name: "created_at")
-  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
-  deletedAt   DateTime? @map(name: "deleted_at")
+  id          Int     @id @default(autoincrement()) @map(name: "id")
+  title       String  @map(name: "title") @db.VarChar(50)
+  description String? @map(name: "description") @db.VarChar(200)
+  createId    Int     @map(name: "create_id")
+  creator     String  @map(name: "creator") @db.VarChar(200)
+  updateId    Int     @map(name: "update_id")
+  updater     String  @map(name: "updater") @db.VarChar(50)
+  createdAt   Int  @map("created_at")
+  updatedAt   Int  @map("updated_at")
+  deletedAt   Int  @default(0) @map("deleted_at")
 
   @@map("cms_nav")
 }
 
 // 导航关联子页面
 model cmsNavItem {
-  id          Int       @id @default(autoincrement()) @map(name: "id")
-  navId       Int       @map(name: "nav_id")
-  pageId      Int       @map(name: "page_id")
-  title       String    @map(name: "title") @db.VarChar(50)
-  description String?   @map(name: "description") @db.VarChar(200)
-  icon        String?   @map(name: "icon") @db.VarChar(255)
-  order       Int       @map(name: "order")
-  isLink      Boolean   @map(name: "is_link")
-  createId    Int       @map(name: "create_id")
-  creator     String    @map(name: "creator") @db.VarChar(50)
-  updateId    Int       @map(name: "update_id")
-  updater     String    @map(name: "updater") @db.VarChar(50)
-  createdAt   DateTime  @default(now()) @map(name: "created_at")
-  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
-  deletedAt   DateTime? @map(name: "deleted_at")
+  id          Int     @id @default(autoincrement()) @map(name: "id")
+  navId       Int     @map(name: "nav_id")
+  pageId      Int     @map(name: "page_id")
+  title       String  @map(name: "title") @db.VarChar(50)
+  description String? @map(name: "description") @db.VarChar(200)
+  icon        String? @map(name: "icon") @db.VarChar(255)
+  order       Int     @map(name: "order")
+  isLink      Boolean @map(name: "is_link")
+  createId    Int     @map(name: "create_id")
+  creator     String  @map(name: "creator") @db.VarChar(50)
+  updateId    Int     @map(name: "update_id")
+  updater     String  @map(name: "updater") @db.VarChar(50)
+  createdAt   Int  @map("created_at")
+  updatedAt   Int  @map("updated_at")
+  deletedAt   Int  @default(0) @map("deleted_at")
 
   @@map("cms_navitem")
 }
 
 // 定义用户模型
 model cmsUser {
-  id            Int       @id @default(autoincrement()) @map("id")
-  userType      Int       @default(0) @map("user_type") @db.TinyInt() // 默认值为0，表示前台用户
-  loginName     String    @unique @map("login_name")
-  nickname      String?   @map("nickname") @db.VarChar(50)
-  realname      String?   @map("realname") @db.VarChar(50)
-  password      String?   @map("password") @db.VarChar(100)
-  phoneNumber   String?   @unique @map("phone_number")
-  email         String?   @unique @map("email")
-  gender        Int?      @map("gender") @db.TinyInt()
-  avatar        String?   @map("avatar") @db.VarChar(255)
-  lastLoginIp   String?   @map("last_login_ip") @db.VarChar(128)
-  lastLoginTime DateTime? @map("last_login_time")
-  remark        String?   @map("remark") @db.VarChar(255)
-  createId      Int       @map("create_id")
-  creator       String    @map("creator") @db.VarChar(50)
-  updateId      Int       @map("update_id")
-  updater       String    @map("updater") @db.VarChar(50)
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-  deletedAt     DateTime? @map("deleted_at")
+  id          Int     @id @default(autoincrement()) @map("id")
+  userType    Int     @default(0) @map("user_type") @db.TinyInt() // 默认值为0，表示前台用户
+  loginName   String  @unique @map("login_name")
+  nickname    String? @map("nickname") @db.VarChar(50)
+  realname    String? @map("realname") @db.VarChar(50)
+  password    String? @map("password") @db.VarChar(100)
+  phoneNumber String? @unique @map("phone_number")
+  email       String? @unique @map("email")
+  gender      Int?    @map("gender") @db.TinyInt()
+  avatar      String? @map("avatar") @db.VarChar(255)
+  lastLoginIp String? @map("last_login_ip") @db.VarChar(128)
+  lastLoginAt Int? @map("last_login_at")
+  remark      String? @map("remark") @db.VarChar(255)
+  createId    Int     @map("create_id")
+  creator     String  @map("creator") @db.VarChar(50)
+  updateId    Int     @map("update_id")
+  updater     String  @map("updater") @db.VarChar(50)
+  createdAt   Int  @map("created_at")
+  updatedAt   Int  @map("updated_at")
+  deletedAt   Int  @default(0) @map("deleted_at")
 
   @@map("cms_user")
 }
 
 // 定义用户token关联表
 model cmsUserToken {
-  id           Int      @id @default(autoincrement()) @map("id")
-  userId       Int      @map("user_id")
-  accessToken  String   @map("access_token") @db.VarChar(255)
-  refreshToken String   @map("refresh_token") @db.VarChar(255)
-  expiry       DateTime @map("expiry")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id           Int    @id @default(autoincrement()) @map("id")
+  userId       Int    @map("user_id")
+  accessToken  String @map("access_token") @db.VarChar(255)
+  refreshToken String @map("refresh_token") @db.VarChar(255)
+  createdAt    Int @map("created_at")
+  expiryAt     Int @map("expiry_at")
 
   @@map("cms_user_token")
 }
 
 // 定义用户角色模型
 model cmsUserRole {
-  id          Int       @id @default(autoincrement()) @map("id")
-  name        String    @unique @map("name") // 角色名称，唯一
-  description String?   @map("description") @db.VarChar(200) // 角色描述
-  createId    Int       @map("create_id")
-  creator     String    @map("creator") @db.VarChar(50)
-  updateId    Int       @map("update_id")
-  updater     String    @map("updater") @db.VarChar(50)
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id          Int     @id @default(autoincrement()) @map("id")
+  name        String  @unique @map("name") // 角色名称，唯一
+  description String? @map("description") @db.VarChar(200) // 角色描述
+  createId    Int     @map("create_id")
+  creator     String  @map("creator") @db.VarChar(50)
+  updateId    Int     @map("update_id")
+  updater     String  @map("updater") @db.VarChar(50)
+  createdAt   Int  @map("created_at")
+  updatedAt   Int  @map("updated_at")
+  deletedAt   Int  @default(0) @map("deleted_at")
 
   @@map("cms_user_role")
 }
@@ -146,96 +146,96 @@ model cmsUserRoleRelation {
 
 // 定义资源文件模型
 model cmsResource {
-  id        Int       @id @default(autoincrement()) @map("id")
-  categryId Int       @default(0) @map("categry_id")
-  name      String    @map("name") @db.VarChar(50)
-  filePath  String    @map("file_path") @db.VarChar(255) // 资源文件路径
-  md5       String?   @map("md5") @db.VarChar(32) // 资源文件的 MD5 值
-  sha1      String?   @map("sha1") @db.VarChar(40) // 资源文件的 SHA1 值
-  fileType  String    @map("file_type") @db.VarChar(10) // 资源文件类型，可以是图片、音频、视频等
-  createId  Int       @map("create_id")
-  creator   String    @map("creator") @db.VarChar(50)
-  updateId  Int       @map("update_id")
-  updater   String    @map("updater") @db.VarChar(50)
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  id        Int     @id @default(autoincrement()) @map("id")
+  categryId Int     @default(0) @map("categry_id")
+  name      String  @map("name") @db.VarChar(50)
+  filePath  String  @map("file_path") @db.VarChar(255) // 资源文件路径
+  md5       String? @map("md5") @db.VarChar(32) // 资源文件的 MD5 值
+  sha1      String? @map("sha1") @db.VarChar(40) // 资源文件的 SHA1 值
+  fileType  String  @map("file_type") @db.VarChar(10) // 资源文件类型，可以是图片、音频、视频等
+  createId  Int     @map("create_id")
+  creator   String  @map("creator") @db.VarChar(50)
+  updateId  Int     @map("update_id")
+  updater   String  @map("updater") @db.VarChar(50)
+  createdAt Int  @map("created_at")
+  updatedAt Int  @map("updated_at")
+  deletedAt Int  @default(0) @map("deleted_at")
 
   @@map("cms_resource")
 }
 
 // 定义资源分类模型
 model cmsResourceCategory {
-  id          Int       @id @default(autoincrement()) @map("id")
-  name        String    @unique @map("name") // 分类名称，唯一
-  description String?   @map("description") @db.VarChar(200) // 分类描述
-  parentId    Int?      @map("parent_id") // 父级分类ID，用于表示分类的层级结构
-  createId    Int       @map("create_id")
-  creator     String    @map("creator") @db.VarChar(50)
-  updateId    Int       @map("update_id")
-  updater     String    @map("updater") @db.VarChar(50)
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  id          Int     @id @default(autoincrement()) @map("id")
+  name        String  @unique @map("name") // 分类名称，唯一
+  description String? @map("description") @db.VarChar(200) // 分类描述
+  parentId    Int?    @map("parent_id") // 父级分类ID，用于表示分类的层级结构
+  createId    Int     @map("create_id")
+  creator     String  @map("creator") @db.VarChar(50)
+  updateId    Int     @map("update_id")
+  updater     String  @map("updater") @db.VarChar(50)
+  createdAt   Int  @map("created_at")
+  updatedAt   Int  @map("updated_at")
+  deletedAt   Int  @default(0) @map("deleted_at")
 
   @@map("cms_resource_category")
 }
 
 // 文章表
 model cmsArticle {
-  id             Int       @id @default(autoincrement()) @map("id")
-  postFormat     Int?      @default(1) @map("post_format") @db.TinyInt() // 文章格式
-  seoTitle       String?   @map("seo_title") @db.VarChar(100) // 三要素标题，用于seo优化
-  seoKeywords    String?   @map("seo_keywords") @db.VarChar(255) // 三要素关键词，用于seo优化
-  seoDescription String?   @map("seo_description") @db.VarChar(255) // 三要素描述，用于seo优化
-  thumbnail      String?   @map("thumbnail") @db.VarChar(255) // 封面
-  title          String    @map("title") @db.VarChar(100) // 标题
-  content        String?   @map("content") @db.LongText // 内容
-  keywords       String?   @map("keywords") @db.VarChar(255) // 关键词
-  excerpt        String?   @map("excerpt") @db.VarChar(255) // 摘要
-  source         String?   @map("source") @db.VarChar(255) // 文章来源
-  isTop          Int?      @map("is_top") @db.TinyInt() // 置顶
-  hits           Int?      @map("hits") // 点击数
-  favorites      Int?      @map("favorites") // 收藏数
-  Like           Int?      @map("like") // 点赞数
-  Comment        Int?      @map("comment") // 点赞数
-  more           Json?     @map("more") @db.Json // 扩展属性
-  articleStatus  Int?      @default(1) @map("article_status") @db.TinyInt // 文章状态
-  commentStatus  Int?      @default(1) @map("comment_status") @db.TinyInt // 评论状态
-  order          Int?      @map("order") // 排序
-  publishedTime  DateTime? @map("published_time") // 发布时间
-  createId       Int       @map("create_id")
-  creator        String    @map("creator") @db.VarChar(50)
-  updateId       Int       @map("update_id")
-  updater        String    @map("updater") @db.VarChar(50)
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-  deletedAt      DateTime? @map("deleted_at")
+  id             Int     @id @default(autoincrement()) @map("id")
+  postFormat     Int?    @default(1) @map("post_format") @db.TinyInt() // 文章格式
+  seoTitle       String? @map("seo_title") @db.VarChar(100) // 三要素标题，用于seo优化
+  seoKeywords    String? @map("seo_keywords") @db.VarChar(255) // 三要素关键词，用于seo优化
+  seoDescription String? @map("seo_description") @db.VarChar(255) // 三要素描述，用于seo优化
+  thumbnail      String? @map("thumbnail") @db.VarChar(255) // 封面
+  title          String  @map("title") @db.VarChar(100) // 标题
+  content        String? @map("content") @db.LongText // 内容
+  keywords       String? @map("keywords") @db.VarChar(255) // 关键词
+  excerpt        String? @map("excerpt") @db.VarChar(255) // 摘要
+  source         String? @map("source") @db.VarChar(255) // 文章来源
+  isTop          Int?    @map("is_top") @db.TinyInt() // 置顶
+  hits           Int?    @map("hits") // 点击数
+  favorites      Int?    @map("favorites") // 收藏数
+  Like           Int?    @map("like") // 点赞数
+  Comment        Int?    @map("comment") // 点赞数
+  more           Json?   @map("more") @db.Json // 扩展属性
+  articleStatus  Int?    @default(1) @map("article_status") @db.TinyInt // 文章状态
+  commentStatus  Int?    @default(1) @map("comment_status") @db.TinyInt // 评论状态
+  order          Int?    @map("order") // 排序
+  publishedAt    Int? @map("published_at") // 发布时间
+  createId       Int     @map("create_id")
+  creator        String  @map("creator") @db.VarChar(50)
+  updateId       Int     @map("update_id")
+  updater        String  @map("updater") @db.VarChar(50)
+  createdAt      Int  @map("created_at")
+  updatedAt      Int  @map("updated_at")
+  deletedAt      Int  @default(0) @map("deleted_at")
 
   @@map("cms_article")
 }
 
 // 文章分类
 model cmsArticleCategory {
-  id             Int       @id @default(autoincrement()) @map("id")
-  parentId       Int       @map("parent_id") // 分类id
-  seoTitle       String?   @map("seo_title") @db.VarChar(100) // 三要素标题，用于seo优化
-  seoKeywords    String?   @map("seo_keywords") @db.VarChar(255) // 三要素关键词，用于seo优化
-  seoDescription String?   @map("seo_description") @db.VarChar(255) // 三要素描述，用于seo优化
-  name           String    @map("name") @db.VarChar(100)
-  icon           String?   @map("icon") @db.VarChar(255) // 分类图标 
-  description    String?   @map("description") @db.VarChar(255)
-  status         Int?      @default(1) @map("status") @db.TinyInt()
-  count          Int       @map("count") // 文章数
-  path           String    @map("path") @db.VarChar(255)
-  order          Int?      @map("order") // 排序
-  createId       Int       @map("create_id")
-  creator        String    @map("creator") @db.VarChar(50)
-  updateId       Int       @map("update_id")
-  updater        String    @map("updater") @db.VarChar(50)
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-  deletedAt      DateTime? @map("deleted_at")
+  id             Int     @id @default(autoincrement()) @map("id")
+  parentId       Int     @map("parent_id") // 分类id
+  seoTitle       String? @map("seo_title") @db.VarChar(100) // 三要素标题，用于seo优化
+  seoKeywords    String? @map("seo_keywords") @db.VarChar(255) // 三要素关键词，用于seo优化
+  seoDescription String? @map("seo_description") @db.VarChar(255) // 三要素描述，用于seo优化
+  name           String  @map("name") @db.VarChar(100)
+  icon           String? @map("icon") @db.VarChar(255) // 分类图标 
+  description    String? @map("description") @db.VarChar(255)
+  status         Int?    @default(1) @map("status") @db.TinyInt()
+  count          Int     @map("count") // 文章数
+  path           String  @map("path") @db.VarChar(255)
+  order          Int?    @map("order") // 排序
+  createId       Int     @map("create_id")
+  creator        String  @map("creator") @db.VarChar(50)
+  updateId       Int     @map("update_id")
+  updater        String  @map("updater") @db.VarChar(50)
+  createdAt      Int  @map("created_at")
+  updatedAt      Int  @map("updated_at")
+  deletedAt      Int  @default(0) @map("deleted_at")
 
   @@map("cms_article_category")
 }
@@ -253,7 +253,7 @@ model cmsArticleCategoryPost {
 // 系统配置表
 model systemConfig {
   id    Int    @id @default(autoincrement()) @map("id")
-  key   String @map("key") @db.VarChar(50)
+  key   String @unique @map("key") @db.VarChar(50)
   value String @map("value") @db.VarChar(255)
 
   @@map("system_config")

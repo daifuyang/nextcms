@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   DrawerForm,
@@ -13,36 +13,69 @@ import { Button, Form, message } from "antd";
 import { getArticleCategoriesTree } from "@/services/admin/articleCategory";
 import Editor from "@/components/lexical";
 import MyUpload from "@/components/uoload";
-import { addArticle } from "@/services/admin/article";
+import { addArticle, getArticle } from "@/services/admin/article";
+
+import dayjs from "dayjs";
+
+interface Props {
+  title?: string;
+  children?: JSX.Element | undefined; // 或者具体的组件类型
+  initialValues?: any; // 根据实际情况指定类型
+  onFinish?: () => void
+}
 
 interface ModalFormProps {
   title: string;
 }
 
-export default function Save() {
+export default function Save(props: Props) {
+  const { title = "新增文章", children, initialValues, onFinish } = props;
   const [form] = Form.useForm<ModalFormProps>();
+  const [open, setOpen] = useState(false);
 
-  const [title, setTitle] = useState<string>("新增文章");
+  useEffect(() => {
+    if (initialValues?.id && open) {
+      const fetchData = async function () {
+        const res = await getArticle(initialValues.id);
+        if (res.code == 1) {
+          console.log("res", res.data);
+        }
+      };
+      fetchData();
+    }
+  }, [initialValues, open]);
 
   return (
     <DrawerForm<ModalFormProps>
       title={title}
       width={"80%"}
+      open={open}
       trigger={
-        <Button icon={<PlusOutlined />} type="primary">
-          新建
-        </Button>
+        children || (
+          <Button icon={<PlusOutlined />} type="primary">
+            新建
+          </Button>
+        )
       }
       form={form}
+      onOpenChange={(visible) => {
+        setOpen(visible);
+      }}
       autoFocusFirstInput
       drawerProps={{
         destroyOnClose: true
       }}
-      onFinish={async (values) => {
+      initialValues={initialValues}
+      onFinish={async (values: any) => {
+        const { publishedAt = undefined } = values;
+        values["publishedAt"] = dayjs(publishedAt).unix();
         const res = await addArticle(values);
         if (res.code !== 1) {
           message.error(res.msg);
           return false;
+        }
+        if(onFinish) {
+          onFinish()
         }
         message.success(res.msg);
         return true;
@@ -52,8 +85,8 @@ export default function Save() {
         fieldProps={{
           style: { width: 288 },
           fieldNames: {
-            value: 'id',
-            label: 'name',
+            value: "id",
+            label: "name"
           }
         }}
         label="分类"
@@ -65,19 +98,27 @@ export default function Save() {
           }
           return res.data;
         }}
-        rules={[{ required: true, message: '请选择父级分类' }]}
+        rules={[{ required: true, message: "请选择父级分类" }]}
       />
-      <ProFormText label="标题" name="title" rules={[{ required: true, message: '标题不能为空' }]} />
+      <ProFormText
+        label="标题"
+        name="title"
+        rules={[{ required: true, message: "标题不能为空" }]}
+      />
       <ProFormSelect mode="tags" label="标签" name="keywords" />
-      <ProFormDateTimePicker fieldProps={{
-        style: { width: 288 },
-      }} label="发布日期" name="published_time" />
+      <ProFormDateTimePicker
+        fieldProps={{
+          style: { width: 288 }
+        }}
+        label="发布日期"
+        name="publishedAt"
+      />
       <ProForm.Item label="封面" name="thumbnail">
         <MyUpload type="image" />
       </ProForm.Item>
       <ProFormText
         fieldProps={{
-          style: { width: 288 },
+          style: { width: 288 }
         }}
         label="作者"
         name="author"

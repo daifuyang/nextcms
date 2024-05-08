@@ -1,43 +1,30 @@
 import { type NextRequest } from "next/server";
-import { success, error } from "@/utils/api";
+import api from "@/utils/response";
 import prisma from "@/utils/prisma";
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
 import { getFileSchema, assignSchema } from "@/utils/util";
+import { getPageById, getPageByType } from "@/model/page";
+import { timestamp } from "@/utils/date";
 
 export async function show(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
   const idNumber = Number(id);
   if (idNumber <= 0 || Number.isNaN(idNumber)) {
-    return error("该页面不存在或参数错误！");
+    return api.error("该页面不存在或参数错误！");
   }
 
   // 获取公共头和公共页脚
-  const header: any = await prisma.cmsPage.findFirst({
-    where: {
-      type: "header"
-    }
-  });
-
+  const header: any = await getPageByType("header");
   const headerSchema = getFileSchema(header?.filePath);
 
-  const footer: any = await prisma.cmsPage.findFirst({
-    where: {
-      type: "footer"
-    }
-  });
-
+  const footer: any = await getPageByType("footer");
   const footerSchema = getFileSchema(footer?.filePath);
-
-  const page: any = await prisma.cmsPage.findFirst({
-    where: {
-      id: Number(id)
-    }
-  });
+  const page: any = await getPageById(Number(id));
 
   if (!page) {
-    return error("该页面不存在！");
+    return api.error("该页面不存在！");
   }
 
   // 读取本地schema文件
@@ -49,25 +36,21 @@ export async function show(request: NextRequest, { params }: { params: { id: str
   if (schema) {
     page.schema = schema;
   }
-  return success("获取成功！", page);
+  return api.success("获取成功！", page);
 }
 
 export async function update(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
   const idNumber = Number(id);
   if (idNumber <= 0 || Number.isNaN(idNumber)) {
-    return error("该页面不存在或参数错误！");
+    return api.error("该页面不存在或参数错误！");
   }
 
   // 查询该页面是否还存在
-  let page: any = await prisma.cmsPage.findFirst({
-    where: {
-      id: Number(id)
-    }
-  });
+  let page: any = await getPageById(Number(id));
 
   if (!page) {
-    return error("该页面不存在！");
+    return api.error("该页面不存在！");
   }
 
   const { version } = page;
@@ -83,50 +66,49 @@ export async function update(request: NextRequest, { params }: { params: { id: s
   const filePath = `schema/page-${key}-${nextVersion}.json`;
   const file = path.resolve(process.cwd(), filePath);
   try {
-    
-  await prisma.$transaction(async (tx: any) => {
-    // 获取公共页头和公共页脚
+    await prisma.$transaction(async (tx: any) => {
+      // 获取公共页头和公共页脚
 
-    let headerSchema: any = schema?.children?.find((n: any) => n.componentName === "Header");
-    // 查询头页面是否存在
-    await savePublicPage("header", headerSchema, tx);
+      let headerSchema: any = schema?.children?.find((n: any) => n.componentName === "Header");
+      // 查询头页面是否存在
+      await savePublicPage("header", headerSchema, tx);
 
-    // return
+      // return
 
-    let footerSchema: any = schema?.children?.find((n: any) => n.componentName === "Footer");
-    await savePublicPage("footer", footerSchema, tx);
-    fs.writeFileSync(file, JSON.stringify(schema));
+      let footerSchema: any = schema?.children?.find((n: any) => n.componentName === "Footer");
+      await savePublicPage("footer", footerSchema, tx);
+      fs.writeFileSync(file, JSON.stringify(schema));
 
-    // 更新页面
-    page = await tx.cmsPage.update({
-      where: {
-        id: Number(id)
-      },
-      data: {
-        filePath,
-        version: nextVersion,
-        updateId: 1,
-        updater: "admin"
-      }
+      // 更新页面
+      page = await tx.cmsPage.update({
+        where: {
+          id: Number(id)
+        },
+        data: {
+          filePath,
+          version: nextVersion,
+          updateId: 1,
+          updater: "admin"
+        }
+      });
+
+      // 存入日志表中
+      return await tx.cmsPageLog.create({
+        data: {
+          title,
+          description,
+          filePath,
+          type,
+          version: nextVersion,
+          createId: 1,
+          creator: "admin"
+        }
+      });
     });
-
-    // 存入日志表中
-    return await tx.cmsPageLog.create({
-      data: {
-        title,
-        description,
-        filePath,
-        type,
-        version: nextVersion,
-        createId: 1,
-        creator: "admin"
-      }
-    });
-  });
-} catch (error) {
-    console.log('error',error)
-}
-  return success("更新成功！", page);
+  } catch (error) {
+    console.log("error", error);
+  }
+  return api.success("更新成功！", page);
 }
 
 export async function savePublicPage(type: string, schema: any, tx = prisma) {
@@ -164,10 +146,11 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
         createId: 1,
         creator: "admin",
         updateId: 1,
-        updater: "admin"
+        updater: "admin",
+        createdAt: timestamp(),
+        updatedAt: timestamp()
       }
     });
-
   } else if (oldSchema !== newSchema) {
     version = page.version + 1;
     filePath = `schema/${type}-${version}.json`;
@@ -195,7 +178,8 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
       type,
       version,
       createId: 1,
-      creator: "admin"
+      creator: "admin",
+      createdAt: timestamp()
     }
   });
 }

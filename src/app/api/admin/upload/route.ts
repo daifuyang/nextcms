@@ -6,10 +6,10 @@ import fs from "fs";
 import api from "@/utils/response";
 import prisma from "@/utils/prisma";
 import getCurrentUser from "@/utils/user";
+import { timestamp } from "@/utils/date";
 
 export const POST = async (request: NextRequest) => {
-
-  const {origin} = request.nextUrl;
+  const { origin } = request.nextUrl;
 
   const formData = await request.formData();
   const file: any = formData.get("file");
@@ -48,14 +48,14 @@ export const POST = async (request: NextRequest) => {
     where: {
       md5: md5Value
     }
-  })
+  });
 
-  if(exist) {
+  if (exist) {
     return api.success("上传成功！", {
       name: exist.name,
       filePath: exist.filePath,
       prevPath: origin + `/${exist.filePath}`
-    })
+    });
   }
 
   // 计算 SHA1
@@ -97,7 +97,9 @@ export const POST = async (request: NextRequest) => {
         createId: userId,
         creator: loginName,
         updateId: userId,
-        updater: loginName
+        updater: loginName,
+        createdAt: timestamp(),
+        updatedAt: timestamp()
       }
     });
 

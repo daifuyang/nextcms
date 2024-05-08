@@ -4,8 +4,9 @@ import dayjs from "dayjs";
 import bcrypt from "bcrypt";
 import api from "@/utils/response";
 import prisma from "@/utils/prisma";
+import { timestamp } from "@/utils/date";
 
-async function login(request: Request) {
+export async function POST(request: Request) {
   const data = await request.json();
   const { account, password } = data;
   if (!_.trim(account)) {
@@ -32,13 +33,13 @@ async function login(request: Request) {
   } else {
     const accessToken = jwt.sign({ userId: user.id }, "secret", { expiresIn: "7d" });
     const refreshToken = jwt.sign({ userId: user.id }, "refreshSecret", { expiresIn: "7d" }); // 7天过期
-    const expiry = dayjs().add(7, "day").toDate();
+    const expiryAt = dayjs().add(7, "day").unix();
 
     const token = {
       accessToken,
       tokenType: "Bearer",
       refreshToken,
-      expiry
+      expiryAt
     };
 
     // 入库
@@ -47,7 +48,9 @@ async function login(request: Request) {
         userId: user.id,
         accessToken,
         refreshToken,
-        expiry
+        expiryAt,
+        createdAt: timestamp(),
+
       }
     });
 
@@ -58,7 +61,3 @@ async function login(request: Request) {
     return api.success("登录成功！", token);
   }
 }
-
-module.exports = {
-  POST: login
-};

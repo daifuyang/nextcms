@@ -7,50 +7,70 @@ import { useRef } from "react";
 import { getArticles } from "@/services/admin/article";
 import Save from "./save";
 
-const columns: ProColumns<any>[] = [
-  {
-    title: "标题",
-    dataIndex: "title",
-  },
-  {
-    title: "分类",
-    dataIndex: "categoryId",
-  },
-  {
-    title: "更新时间",
-    dataIndex: "updatedAt",
-    hideInSearch: true
-  },
-  {
-    title: "发布人",
-    dataIndex: "creator",
-    hideInSearch: true
-  },
-  {
-    title: "发布状态",
-    dataIndex: "articleStatus",
-    renderText(_, record) {
-      return record.articleStatus === 1 ? '已发布' : '未发布';
-    },
-  },
-  {
-    title: "操作",
-    valueType: "option",
-    render: (text, record, _, action) => (
-      <Space split={<Divider />}>
-        <a key="editable" onClick={() => { }}>
-          编辑
-        </a>
-        <a key="view" onClick={() => { }}>
-          查看
-        </a>
-      </Space>
-    )
-  }
-];
 
 export default function List() {
   const actionRef = useRef<ActionType>();
+
+  const columns: ProColumns<any>[] = [
+    {
+      title: "标题",
+      dataIndex: "title"
+    },
+    {
+      title: "分类",
+      dataIndex: "categoryId",
+      render: (_, record) => {
+        return record.category.name;
+      }
+    },
+    {
+      title: "更新时间",
+      dataIndex: "updatedTime",
+      hideInSearch: true
+    },
+    {
+      title: "发布人",
+      dataIndex: "creator",
+      hideInSearch: true
+    },
+    {
+      title: "发布状态",
+      dataIndex: "articleStatus",
+      renderText: (_, record) => {
+        return record.articleStatus === 1 ? "已发布" : "未发布";
+      }
+    },
+    {
+      title: "操作",
+      valueType: "option",
+      render: (text, record, _, action) => {
+        let categoryId = undefined;
+        if (record.category?.length > 0) {
+          categoryId = record.category[0]?.categoryId;
+        }
+  
+        return (
+          <Space split={<Divider />}>
+            <Save
+              title="编辑文章"
+              key="editable"
+              onFinish={() => {
+                actionRef.current?.reload();
+              }}
+              initialValues={{ ...record, categoryId }}
+            >
+              <a key="editable">编辑</a>
+            </Save>
+            <a key="view" onClick={() => {}}>
+              查看
+            </a>
+          </Space>
+        );
+      }
+    }
+  ];
+  
+
   return (
     <>
       <ProTable<any>
@@ -81,7 +101,14 @@ export default function List() {
           pageSize: 10
         }}
         headerTitle="文章列表"
-        toolBarRender={() => [<Save key="Save" />]}
+        toolBarRender={() => [
+          <Save
+            key="Save"
+            onFinish={() => {
+              actionRef.current?.reload();
+            }}
+          />
+        ]}
       />
     </>
   );

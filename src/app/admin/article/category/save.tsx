@@ -18,7 +18,7 @@ interface FormProps {
 interface Props {
   title: string;
   onFinish?: () => void;
-  children: JSX.Element | undefined; // 或者具体的组件类型
+  children?: JSX.Element | undefined; // 或者具体的组件类型
   initialValues?: any; // 根据实际情况指定类型
 }
 

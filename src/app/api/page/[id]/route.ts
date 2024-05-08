@@ -1,3 +1,4 @@
+import { getPage } from "@/model/page";
 import { error, success } from "@/utils/api";
 import prisma from "@/utils/prisma";
 import { assignSchema, getFileSchema } from "@/utils/util";
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 
   // 获取公共头和公共页脚
-  const header: any = await prisma.cmsPage.findFirst({
+  const header: any = await getPage({
     where: {
       type: "header"
     }
@@ -19,15 +20,14 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   const headerSchema = getFileSchema(header?.filePath);
 
-  const footer: any = await prisma.cmsPage.findFirst({
+  const footer: any = await getPage({
     where: {
       type: "footer"
     }
   });
 
   const footerSchema = getFileSchema(footer?.filePath);
-
-  const page: any = await prisma.cmsPage.findFirst({
+  const page: any = await getPage({
     where: {
       id: Number(id)
     }

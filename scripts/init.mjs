@@ -3,6 +3,10 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
+function timestamp() {
+  return Math.floor(new Date().getTime() / 1000);
+}
+
 async function main() {
   console.log("sql init start");
 
@@ -26,7 +30,9 @@ async function main() {
         createId: 1,
         creator: "admin",
         updateId: 1,
-        updater: "admin"
+        updater: "admin",
+        createdAt: timestamp(),
+        updatedAt: timestamp()
       }
     });
   }

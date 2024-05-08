@@ -3,8 +3,13 @@ import { NextRequest } from "next/server";
 import api from "@/utils/response";
 import getCurrentUser from "@/utils/user";
 import { isNumberEmpty } from "@/utils/validator";
+import redis from "@/utils/redis";
+import { timestamp } from "@/utils/date";
+import { stringify } from "@/utils/util";
 
-export async function categories(request: NextRequest) {
+export const categoryIdKey = "nextcms:article:category:id:";
+
+async function categories(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const current = parseInt(searchParams.get("current") || "1");
   const pageSize = parseInt(searchParams.get("pageSize") || "10");
@@ -12,7 +17,7 @@ export async function categories(request: NextRequest) {
   // 先获取所有的文章数量
   const total = prisma.cmsArticleCategory.count({
     where: {
-      deletedAt: null
+      deletedAt: 0
     }
   });
 
@@ -22,14 +27,14 @@ export async function categories(request: NextRequest) {
     skip: offset,
     take: pageSize,
     where: {
-      deletedAt: null
+      deletedAt: 0
     }
   });
 
   return api.success("获取成功！", { total, data: categories, current, pageSize });
 }
 
-export async function addCategories(request: NextRequest) {
+async function addCategories(request: NextRequest) {
   const json = await request.json();
 
   const { parentId, name, description, icon, order, status } = json;
@@ -69,14 +74,18 @@ export async function addCategories(request: NextRequest) {
       createId: userId,
       creator: loginName,
       updateId: userId,
-      updater: loginName
+      updater: loginName,
+      createdAt: timestamp(),
+      updatedAt: timestamp(),
     }
   });
+  const key = `${categoryIdKey}${category.id}`;
 
-  return api.success("添加成功！", category);
+  redis.set(key, stringify(category));
+  return api.success("添加成功！");
 }
 
 module.exports = {
   GET: categories,
-  POST: addCategories,
+  POST: addCategories
 };
