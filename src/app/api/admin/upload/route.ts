@@ -6,7 +6,7 @@ import fs from "fs";
 import api from "@/utils/response";
 import prisma from "@/utils/prisma";
 import getCurrentUser from "@/utils/user";
-import { timestamp } from "@/utils/date";
+import { now } from "@/utils/date";
 
 export const POST = async (request: NextRequest) => {
   const { origin } = request.nextUrl;
@@ -98,8 +98,8 @@ export const POST = async (request: NextRequest) => {
         creator: loginName,
         updateId: userId,
         updater: loginName,
-        createdAt: timestamp(),
-        updatedAt: timestamp()
+        createdAt: now(),
+        updatedAt: now()
       }
     });
 

@@ -3,9 +3,12 @@ import api from "@/utils/response";
 import getCurrentUser from "@/utils/user";
 import { isNumberEmpty } from "@/utils/validator";
 import { NextRequest } from "next/server";
-import redis from "@/utils/redis";
-import { timestamp } from "@/utils/date";
-import { getCategoryById } from "@/model/articleCategory";
+import { now } from "@/utils/date";
+import {
+  getArticleCategory,
+  getArticleCategoryById,
+  updateArticleCategory
+} from "@/model/articleCategory";
 
 interface Params {
   id: string;
@@ -14,7 +17,7 @@ interface Params {
 export async function getCategory(request: NextRequest, context: { params: Params }) {
   const id = Number(context.params.id);
   // 获取单个分类
-  const category = await getCategoryById(id);
+  const category = await getArticleCategoryById(id);
   return api.success("获取成功！", category);
 }
 
@@ -28,14 +31,10 @@ export async function updateCategory(request: NextRequest, context: { params: Pa
     return api.error("父级分类不能为空！");
   }
   // 获取当前分类
-  const old = await prisma.cmsArticleCategory.findFirst({
-    where: {
-      id
-    }
-  });
+  const old = await getArticleCategoryById(id);
   // 判断分类名称是否存在，不允许添加重复值
   if (name !== old?.name) {
-    const exist = await prisma.cmsArticleCategory.findFirst({
+    const exist = await getArticleCategory({
       where: {
         name
       }
@@ -47,24 +46,19 @@ export async function updateCategory(request: NextRequest, context: { params: Pa
   const path = parentId ? `0-${parentId}` : "0";
   const count = 0;
   // 不存在则新增分类
-  const category = await prisma.cmsArticleCategory.update({
-    where: {
-      id
-    },
-    data: {
-      parentId,
-      name,
-      description,
-      icon,
-      order,
-      count,
-      path,
-      status,
-      createId: userId,
-      creator: loginName,
-      updateId: userId,
-      updater: loginName
-    }
+  const category = await updateArticleCategory(id, {
+    parentId,
+    name,
+    description,
+    icon,
+    order,
+    count,
+    path,
+    status,
+    createId: userId,
+    creator: loginName,
+    updateId: userId,
+    updater: loginName
   });
   return api.success("更新成功！", category);
 }
@@ -72,13 +66,13 @@ export async function updateCategory(request: NextRequest, context: { params: Pa
 export async function deleteCategory(request: NextRequest, context: { params: Params }) {
   const id = Number(context.params.id);
 
-  const category = await getCategoryById(id);
+  const category = await getArticleCategoryById(id);
 
   if (!category) {
     return api.error("分类不存在！");
   }
   // 查询是否存在子集分类
-  const children = await prisma.cmsArticleCategory.findFirst({
+  const children = await getArticleCategory({
     where: {
       parentId: Number(id)
     }
@@ -86,13 +80,8 @@ export async function deleteCategory(request: NextRequest, context: { params: Pa
   if (children) {
     return api.error("存在子分类，清先删除子分类！");
   }
-  const del = await prisma.cmsArticleCategory.update({
-    where: {
-      id: Number(id)
-    },
-    data: {
-      deletedAt: timestamp()
-    }
+  const del = await updateArticleCategory(id, {
+    deletedAt: now()
   });
   return api.success("删除成功！", category);
 }

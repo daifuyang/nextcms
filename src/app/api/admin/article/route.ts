@@ -1,19 +1,19 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { apiHandler } from "@/utils/api";
 import api from "@/utils/response";
 import prisma from "@/utils/prisma";
 import getCurrentUser from "@/utils/user";
 import { escapeHTML } from "@/utils/util";
-import redis from "@/utils/redis";
-import { getArticleCount, getList } from "@/model/article";
-import { timestamp } from "@/utils/date";
+import { createArticle, getArticleCount, getList } from "@/model/article";
+import { now } from "@/utils/date";
+import { getArticleCategoryById } from "@/model/articleCategory";
 
+// 获取文章列表
 async function articleList(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const current = parseInt(searchParams.get("current") || "1");
   const pageSize = parseInt(searchParams.get("pageSize") || "10");
 
-  const total = await getArticleCount()
+  const total = await getArticleCount();
   const data = await getList({ current, pageSize });
 
   return api.success("获取成功！", {
@@ -39,32 +39,25 @@ async function addArticle(request: NextRequest) {
   }
 
   // 判断分类是否存在
-  const category = await prisma.cmsArticleCategory.findFirst({
-    where: {
-      id: categoryId,
-      deletedAt: 0
-    }
-  });
+  const category = await getArticleCategoryById(categoryId);
 
   if (!category) {
     return api.error("分类不存在！");
   }
 
   // 入库
-  const article = await prisma.cmsArticle.create({
-    data: {
-      title,
-      content: escapeHTML(content),
-      keywords: keywords?.join(","),
-      excerpt,
-      publishedAt,
-      createId: userId,
-      creator: loginName,
-      updateId: userId,
-      updater: loginName,
-      createdAt: timestamp(),
-      updatedAt: timestamp()
-    }
+  const article = await createArticle({
+    title,
+    content: escapeHTML(content),
+    keywords: keywords?.join(","),
+    excerpt,
+    publishedAt,
+    createId: userId,
+    creator: loginName,
+    updateId: userId,
+    updater: loginName,
+    createdAt: now(),
+    updatedAt: now()
   });
 
   // 建立分类映射关系

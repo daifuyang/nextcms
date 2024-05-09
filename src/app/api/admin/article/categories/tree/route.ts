@@ -1,4 +1,4 @@
-import { getCagegoryTree } from "@/model/articleCategory";
+import { getArticleCagegoryTree } from "@/model/articleCategory";
 import prisma from "@/utils/prisma";
 import api from "@/utils/response";
 import { isNumberEmpty } from "@/utils/validator";
@@ -21,7 +21,8 @@ export async function GET(request: NextRequest) {
   if (!isNumberEmpty(status)) {
     where.status = statusInt;
   }
-  const categories = await getCagegoryTree({
+
+  const categories = await getArticleCagegoryTree({
     where
   });
   return api.success("获取成功！", categories);

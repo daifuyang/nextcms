@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-function timestamp() {
+function now() {
   return Math.floor(new Date().getTime() / 1000);
 }
 
@@ -31,8 +31,8 @@ async function main() {
         creator: "admin",
         updateId: 1,
         updater: "admin",
-        createdAt: timestamp(),
-        updatedAt: timestamp()
+        createdAt: now(),
+        updatedAt: now()
       }
     });
   }

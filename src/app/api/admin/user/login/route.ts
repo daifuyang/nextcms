@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import bcrypt from "bcrypt";
 import api from "@/utils/response";
 import prisma from "@/utils/prisma";
-import { timestamp } from "@/utils/date";
+import { now } from "@/utils/date";
 
 export async function POST(request: Request) {
   const data = await request.json();
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
         accessToken,
         refreshToken,
         expiryAt,
-        createdAt: timestamp(),
+        createdAt: now(),
 
       }
     });

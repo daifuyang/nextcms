@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import xss from "xss";
 
 type DataWithBigInt = {
   [key: string]: any;
@@ -33,24 +34,14 @@ export function escapeHTML(html: string) {
   if (!html) {
     return;
   }
-  return html
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/'/g, "&apos;")
-    .replace(/"/g, "&quot;");
+  return xss(html)
 }
 
 export function decodeEntities(encodedString: string) {
   if (!encodedString) {
-    return;
+    return '';
   }
-  return encodedString
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, "&");
+  return 
 }
 
 export function stringify(obj: any) {

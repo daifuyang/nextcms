@@ -4,8 +4,14 @@ import api from "@/utils/response";
 import getCurrentUser from "@/utils/user";
 import { isNumberEmpty } from "@/utils/validator";
 import redis from "@/utils/redis";
-import { timestamp } from "@/utils/date";
+import { now } from "@/utils/date";
 import { stringify } from "@/utils/util";
+import {
+  createArticleCategory,
+  getArticleCategory,
+  getArticleCategoryCount,
+  getArticleCategoryList
+} from "@/model/articleCategory";
 
 export const categoryIdKey = "nextcms:article:category:id:";
 
@@ -15,20 +21,12 @@ async function categories(request: NextRequest) {
   const pageSize = parseInt(searchParams.get("pageSize") || "10");
 
   // 先获取所有的文章数量
-  const total = prisma.cmsArticleCategory.count({
-    where: {
-      deletedAt: 0
-    }
-  });
+  const total = await getArticleCategoryCount();
 
   // 获取所有文章，分页
-  const offset = (current - 1) * pageSize;
-  const categories = await prisma.cmsArticleCategory.findMany({
-    skip: offset,
-    take: pageSize,
-    where: {
-      deletedAt: 0
-    }
+  const categories = await getArticleCategoryList({
+    current,
+    pageSize
   });
 
   return api.success("获取成功！", { total, data: categories, current, pageSize });
@@ -47,7 +45,7 @@ async function addCategories(request: NextRequest) {
   }
 
   // 判断分类名称是否存在，不允许添加重复值
-  const exist = await prisma.cmsArticleCategory.findFirst({
+  const exist = await getArticleCategory({
     where: {
       name
     }
@@ -61,23 +59,21 @@ async function addCategories(request: NextRequest) {
   const count = 0;
 
   // 不存在则新增分类
-  const category = await prisma.cmsArticleCategory.create({
-    data: {
-      parentId,
-      name,
-      description,
-      icon,
-      order,
-      count,
-      path,
-      status,
-      createId: userId,
-      creator: loginName,
-      updateId: userId,
-      updater: loginName,
-      createdAt: timestamp(),
-      updatedAt: timestamp(),
-    }
+  const category = await createArticleCategory({
+    parentId,
+    name,
+    description,
+    icon,
+    order,
+    count,
+    path,
+    status,
+    createId: userId,
+    creator: loginName,
+    updateId: userId,
+    updater: loginName,
+    createdAt: now(),
+    updatedAt: now()
   });
   const key = `${categoryIdKey}${category.id}`;
 

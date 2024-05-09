@@ -6,7 +6,7 @@ import fs from "fs";
 import _ from "lodash";
 import { getFileSchema, assignSchema } from "@/utils/util";
 import { getPageById, getPageByType } from "@/model/page";
-import { timestamp } from "@/utils/date";
+import { now } from "@/utils/date";
 
 export async function show(request: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params;
@@ -147,8 +147,8 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
         creator: "admin",
         updateId: 1,
         updater: "admin",
-        createdAt: timestamp(),
-        updatedAt: timestamp()
+        createdAt: now(),
+        updatedAt: now()
       }
     });
   } else if (oldSchema !== newSchema) {
@@ -179,7 +179,7 @@ export async function savePublicPage(type: string, schema: any, tx = prisma) {
       version,
       createId: 1,
       creator: "admin",
-      createdAt: timestamp()
+      createdAt: now()
     }
   });
 }

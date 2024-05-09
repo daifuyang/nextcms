@@ -11,5 +11,15 @@ export async function addArticle(data: any) {
 
 // 获取单个文章
 export async function getArticle(id: string | number) {
-    return await request.get(`/api/admin/article/${id}`)
+  return await request.get(`/api/admin/article/${id}`);
+}
+
+// 更新文章
+export async function updateArticle(id: string | number, data: any) {
+  return await request.put(`/api/admin/article/${id}`, data);
+}
+
+// 删除文章
+export async function deleteArticle(id: string | number) {
+  return await request.delete(`/api/admin/article/${id}`);
 }

@@ -6,31 +6,29 @@
  *
  */
 
-import { $getRoot, $insertNodes } from 'lexical';
-import { $generateNodesFromDOM } from '@lexical/html';
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { useLayoutEffect } from 'react';
+import { $getRoot, $insertNodes, $setSelection } from "lexical";
+import { $generateNodesFromDOM } from "@lexical/html";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLayoutEffect } from "react";
 
 export function InitialStatePlugin({
-    initialValue = null,
+  initialValue = null
 }: {
-    initialValue?: string | null;
+  initialValue?: string | null;
 }): null {
-    const [editor] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext();
 
-    useLayoutEffect(() => {
-        if (editor && initialValue) {
-            editor.update(() => {
-                const parser = new DOMParser();
-                const dom = parser.parseFromString(initialValue, "text/html");
-                const nodes = $generateNodesFromDOM(editor, dom);
-                $getRoot().select();
+  useLayoutEffect(() => {
+    if (editor && initialValue) {
+      editor.update(() => {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(initialValue, "text/html");
+        const nodes = $generateNodesFromDOM(editor, dom);
+        $insertNodes(nodes);
+        $setSelection(null);
+      });
+    }
+  }, []);
 
-                // Insert them at a selection.
-                $insertNodes(nodes);
-            })
-        }
-    }, [])
-
-    return null;
+  return null;
 }

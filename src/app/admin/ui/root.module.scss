@@ -14,16 +14,16 @@
 
                 .global-header-logo {
                     height: 100%;
-    
+
                     >a {
                         display: flex;
                         align-items: center;
                         height: 100%;
-    
+
                         >img {
                             height: 28px;
                         }
-    
+
                         >h1 {
                             height: 32px;
                             margin: 0 0 0 12px;
@@ -31,6 +31,32 @@
                             font-weight: 600;
                             font-size: 18px;
                             line-height: 32px;
+                        }
+                    }
+                }
+
+                .global-header-content {
+                    flex: 1;
+                    display: flex;
+
+                    .global-header-content-nav {
+                        flex: 1;
+                    }
+
+                    .global-header-content-right {
+                        color: #fff;
+                        display: flex;
+                        align-items: center;
+
+                        .global-header-content-avatar {
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            margin: 0 14px;
+                            .global-header-content-nickname {
+                                font-size: 16px;
+                                margin-right: 8px;
+                            }
                         }
                     }
                 }

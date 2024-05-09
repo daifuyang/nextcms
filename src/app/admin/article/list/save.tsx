@@ -13,7 +13,7 @@ import { Button, Form, message } from "antd";
 import { getArticleCategoriesTree } from "@/services/admin/articleCategory";
 import Editor from "@/components/lexical";
 import MyUpload from "@/components/uoload";
-import { addArticle, getArticle } from "@/services/admin/article";
+import { addArticle, getArticle, updateArticle } from "@/services/admin/article";
 
 import dayjs from "dayjs";
 
@@ -21,7 +21,7 @@ interface Props {
   title?: string;
   children?: JSX.Element | undefined; // 或者具体的组件类型
   initialValues?: any; // 根据实际情况指定类型
-  onFinish?: () => void
+  onFinish?: () => void;
 }
 
 interface ModalFormProps {
@@ -38,7 +38,11 @@ export default function Save(props: Props) {
       const fetchData = async function () {
         const res = await getArticle(initialValues.id);
         if (res.code == 1) {
-          console.log("res", res.data);
+          form.setFieldsValue({
+            ...res.data,
+            categoryId: res.data.category?.id,
+            publishedAt: dayjs.unix(res.data.publishedAt)
+          });
         }
       };
       fetchData();
@@ -67,20 +71,27 @@ export default function Save(props: Props) {
       }}
       initialValues={initialValues}
       onFinish={async (values: any) => {
-        const { publishedAt = undefined } = values;
+        const { id, publishedAt = undefined } = values;
         values["publishedAt"] = dayjs(publishedAt).unix();
-        const res = await addArticle(values);
-        if (res.code !== 1) {
+        let res: any = null;
+        if (id > 0) {
+          res = await updateArticle(id, values);
+        } else {
+          res = await addArticle(values);
+        }
+        if (res?.code !== 1) {
           message.error(res.msg);
           return false;
         }
-        if(onFinish) {
-          onFinish()
+        if (onFinish) {
+          onFinish();
         }
         message.success(res.msg);
         return true;
       }}
     >
+      <ProFormText name="id" hidden />
+
       <ProFormTreeSelect
         fieldProps={{
           style: { width: 288 },

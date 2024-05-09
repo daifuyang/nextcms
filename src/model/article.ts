@@ -5,12 +5,12 @@
  */
 
 import prisma from "@/utils/prisma";
-import { cmsArticle, cmsArticleCategory } from "@prisma/client";
+import { Prisma, PrismaClient, cmsArticle, cmsArticleCategory } from "@prisma/client";
 import { getCategoryPostByArticleId } from "./articleCategoryPost";
-import { getCategoryById } from "./articleCategory";
+import { getArticleCategoryById } from "./articleCategory";
 import redis from "@/utils/redis";
-import dayjs from "dayjs";
 import { modelDateTime, widthDateTime } from "./date";
+import { ITXClientDenyList } from "@prisma/client/runtime/library";
 
 interface ParamsProps {
   current: number;
@@ -60,7 +60,7 @@ export async function getList(params: ParamsProps) {
     const categoryPost = await getCategoryPostByArticleId(item.id);
     const { categoryId } = categoryPost || {};
     if (categoryId) {
-      const category = await getCategoryById(categoryId);
+      const category = await getArticleCategoryById(categoryId);
       if (category) {
         list[index].category = category;
       }
@@ -88,5 +88,29 @@ export async function getArticleById(id: number) {
       redis.set(key, JSON.stringify(article));
     }
   }
+
+  return article;
+}
+
+// 创建一篇文章
+export async function createArticle(data: Prisma.cmsArticleCreateInput) {
+  const article = await prisma.cmsArticle.create({
+    data
+  });
+  return article;
+}
+
+// 更新一篇文章
+export async function updateArticle(id: number, data: Prisma.cmsArticleUpdateInput, tx: Omit<PrismaClient, ITXClientDenyList> = prisma) {
+ 
+  const key = `${articleIdKey}${id}`
+  redis.del(key)
+
+  const article = await tx.cmsArticle.update({
+    where: {
+      id
+    },
+    data
+  });
   return article;
 }

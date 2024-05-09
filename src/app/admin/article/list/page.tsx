@@ -2,11 +2,11 @@
 
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
-import { Divider, Space, Tag } from "antd";
+import { Divider, Popconfirm, Space, Tag, message } from "antd";
 import { useRef } from "react";
-import { getArticles } from "@/services/admin/article";
+import { deleteArticle, getArticles } from "@/services/admin/article";
 import Save from "./save";
-
+import dayjs from "dayjs";
 
 export default function List() {
   const actionRef = useRef<ActionType>();
@@ -42,13 +42,11 @@ export default function List() {
     },
     {
       title: "操作",
+      width: 150,
       valueType: "option",
       render: (text, record, _, action) => {
-        let categoryId = undefined;
-        if (record.category?.length > 0) {
-          categoryId = record.category[0]?.categoryId;
-        }
-  
+        const categoryId = record.category?.id;
+        const publishedAt = dayjs.unix(record.publishedAt) 
         return (
           <Space split={<Divider />}>
             <Save
@@ -57,19 +55,32 @@ export default function List() {
               onFinish={() => {
                 actionRef.current?.reload();
               }}
-              initialValues={{ ...record, categoryId }}
+              initialValues={{ ...record, categoryId, publishedAt }}
             >
               <a key="editable">编辑</a>
             </Save>
             <a key="view" onClick={() => {}}>
               查看
             </a>
+            <Popconfirm title="确定删除吗?" onConfirm={async() => {
+              const res = await deleteArticle(record.id)
+              if(res.code !== 1) {
+                message.error(res.msg)
+                return
+              }
+              message.success(res.msg)
+              actionRef.current?.reload();
+
+            }}>
+            <a style={{color: '#ff4d4f'}} key="del">
+              删除
+            </a>
+            </Popconfirm>
           </Space>
         );
       }
     }
   ];
-  
 
   return (
     <>

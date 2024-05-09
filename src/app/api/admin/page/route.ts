@@ -5,7 +5,7 @@ import _ from "lodash";
 import path from "path";
 import fs from "fs";
 import { getPageList } from "@/model/page";
-import { timestamp } from "@/utils/date";
+import { now } from "@/utils/date";
 
 async function pageList(request: NextRequest) {
   const params: any = (await request.nextUrl.searchParams) || {};
@@ -47,8 +47,8 @@ export async function addPage(request: NextRequest) {
       creator: "admin",
       updateId: 1,
       updater: "admin",
-      createdAt: timestamp(),
-      updatedAt: timestamp()
+      createdAt: now(),
+      updatedAt: now()
     }
   });
 
@@ -81,7 +81,7 @@ export async function addPage(request: NextRequest) {
       version: 1,
       createId: 1,
       creator: "admin",
-      createdAt: timestamp()
+      createdAt: now()
     }
   });
 

@@ -9,7 +9,7 @@ import prisma from "../utils/prisma";
 import { cmsUser, cmsUserToken } from "@prisma/client";
 import api from "@/utils/response";
 import dayjs from "dayjs";
-import { timestamp } from "@/utils/date";
+import { now } from "@/utils/date";
 
 export interface ICreateUserParams {
   loginName: string;
@@ -80,8 +80,8 @@ export async function createUser(params: ICreateUserParams) {
       creator: params.creator,
       updateId: params.updateId,
       updater: params.updater,
-      createdAt: timestamp(),
-      updatedAt: timestamp()
+      createdAt: now(),
+      updatedAt: now()
     }
   });
   await prisma.$disconnect();
