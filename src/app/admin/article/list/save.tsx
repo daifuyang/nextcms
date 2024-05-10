@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import {
   DrawerForm,
@@ -9,7 +9,8 @@ import {
   ProFormTextArea,
   ProFormTreeSelect
 } from "@ant-design/pro-components";
-import { Button, Form, message } from "antd";
+import { Button, Form, TreeSelect, message } from "antd";
+
 import { getArticleCategoriesTree } from "@/services/admin/articleCategory";
 import Editor from "@/components/lexical";
 import MyUpload from "@/components/uoload";
@@ -28,19 +29,28 @@ interface ModalFormProps {
   title: string;
 }
 
+const { SHOW_ALL } = TreeSelect;
+
 export default function Save(props: Props) {
   const { title = "新增文章", children, initialValues, onFinish } = props;
   const [form] = Form.useForm<ModalFormProps>();
   const [open, setOpen] = useState(false);
+  const [categoryIds, setCategoryIds] = useState<any[]>([]);
 
   useEffect(() => {
     if (initialValues?.id && open) {
       const fetchData = async function () {
         const res = await getArticle(initialValues.id);
         if (res.code == 1) {
+          const { category = [] } = res.data;
           form.setFieldsValue({
             ...res.data,
-            categoryId: res.data.category?.id,
+            categoryIds: category?.map((item: any) => {
+              return {
+                value: item.id,
+                label: item.name,
+              };
+            }),
             publishedAt: dayjs.unix(res.data.publishedAt)
           });
         }
@@ -71,7 +81,12 @@ export default function Save(props: Props) {
       }}
       initialValues={initialValues}
       onFinish={async (values: any) => {
-        const { id, publishedAt = undefined } = values;
+        const { id, categoryIds, publishedAt = undefined } = values;
+
+        if (values["categoryIds"]?.length > 0) {
+          values["categoryIds"] = categoryIds.map((item: any) => item.value);
+        }
+
         values["publishedAt"] = dayjs(publishedAt).unix();
         let res: any = null;
         if (id > 0) {
@@ -93,15 +108,23 @@ export default function Save(props: Props) {
       <ProFormText name="id" hidden />
 
       <ProFormTreeSelect
+        initialValue={categoryIds}
         fieldProps={{
           style: { width: 288 },
+          onChange(value, labelList, extra) {
+            setCategoryIds(value);
+          },
+          treeDefaultExpandAll: true,
+          treeCheckStrictly: true,
+          treeCheckable: true,
+          showCheckedStrategy: SHOW_ALL,
           fieldNames: {
             value: "id",
             label: "name"
           }
         }}
         label="分类"
-        name="categoryId"
+        name="categoryIds"
         request={async () => {
           const res = await getArticleCategoriesTree();
           if (res.code !== 1) {

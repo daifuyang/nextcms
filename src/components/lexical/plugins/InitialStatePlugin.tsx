@@ -10,6 +10,7 @@ import { $getRoot, $insertNodes, $setSelection } from "lexical";
 import { $generateNodesFromDOM } from "@lexical/html";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLayoutEffect } from "react";
+import { $restoreEditorState } from "@lexical/utils";
 
 export function InitialStatePlugin({
   initialValue = null
@@ -21,6 +22,7 @@ export function InitialStatePlugin({
   useLayoutEffect(() => {
     if (editor && initialValue) {
       editor.update(() => {
+        $restoreEditorState(editor, editor.getEditorState().clone(null));
         const parser = new DOMParser();
         const dom = parser.parseFromString(initialValue, "text/html");
         const nodes = $generateNodesFromDOM(editor, dom);

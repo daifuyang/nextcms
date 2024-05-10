@@ -6,6 +6,7 @@ import { escapeHTML } from "@/utils/util";
 import { createArticle, getArticleCount, getList } from "@/model/article";
 import { now } from "@/utils/date";
 import { getArticleCategoryById } from "@/model/articleCategory";
+import { createArticleCategoryPost } from "@/model/articleCategoryPost";
 
 // 获取文章列表
 async function articleList(request: NextRequest) {
@@ -27,10 +28,17 @@ async function articleList(request: NextRequest) {
 // 新增
 async function addArticle(request: NextRequest) {
   const params: any = await request.json();
-  const { categoryId, title, content, keywords, excerpt, publishedAt } = params;
+  const { categoryIds, title, content, excerpt, publishedAt } = params;
   const { userId, loginName } = getCurrentUser(request);
+
+  let { keywords } = params;
+
+  if (keywords instanceof Array) {
+    keywords = keywords?.join(",");
+  }
+
   // 验证必填参数不能为空
-  if (!categoryId) {
+  if (categoryIds?.length <= 0) {
     return api.error("分类不能为空！");
   }
 
@@ -39,33 +47,37 @@ async function addArticle(request: NextRequest) {
   }
 
   // 判断分类是否存在
-  const category = await getArticleCategoryById(categoryId);
-
-  if (!category) {
-    return api.error("分类不存在！");
+  for (let index = 0; index < categoryIds.length; index++) {
+    const cid = categoryIds[index];
+    const category = await getArticleCategoryById(cid);
+    if (!category) {
+      return api.error("分类不存在！");
+    }
   }
 
   // 入库
-  const article = await createArticle({
-    title,
-    content: escapeHTML(content),
-    keywords: keywords?.join(","),
-    excerpt,
-    publishedAt,
-    createId: userId,
-    creator: loginName,
-    updateId: userId,
-    updater: loginName,
-    createdAt: now(),
-    updatedAt: now()
-  });
+  const article = await prisma.$transaction(async (tx) => {
+    const article = await createArticle(
+      {
+        title,
+        content: escapeHTML(content),
+        keywords: keywords?.join(","),
+        excerpt,
+        publishedAt,
+        createId: userId,
+        creator: loginName,
+        updateId: userId,
+        updater: loginName,
+        createdAt: now(),
+        updatedAt: now()
+      },
+      tx
+    );
 
-  // 建立分类映射关系
-  await prisma.cmsArticleCategoryPost.create({
-    data: {
-      articleId: article.id,
-      categoryId
-    }
+    // 建立分类映射关系
+    await createArticleCategoryPost(article.id, categoryIds, tx);
+
+    return article;
   });
 
   return api.success("添加成功！", article);

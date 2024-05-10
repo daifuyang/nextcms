@@ -2,11 +2,15 @@ import api from "@/utils/response";
 import { NextRequest } from "next/server";
 import prisma from "@/utils/prisma";
 import { getArticleById, updateArticle } from "@/model/article";
-import { getArticleCategoryById } from "@/model/articleCategory";
+import { getArticleCategoryById, getCategorysByPosts } from "@/model/articleCategory";
 import getCurrentUser from "@/utils/user";
 import { escapeHTML } from "@/utils/util";
 import { now } from "@/utils/date";
-import { deleteArticleCategoryPost, updateArticleCategoryPost } from "@/model/articleCategoryPost";
+import {
+  deleteArticleCategoryPost,
+  getCategoryPostsByArticleId,
+  updateArticleCategoryPost
+} from "@/model/articleCategoryPost";
 
 // 查看单条数据
 interface Params {
@@ -22,24 +26,25 @@ export async function GET(request: NextRequest, context: { params: Params }) {
   }
 
   // 根据id获取所关联的分类id
-  const categoryPost = await prisma.cmsArticleCategoryPost.findFirst({
-    where: {
-      articleId: Number(id)
-    }
-  });
-  const data: any = { ...article };
-  if (categoryPost) {
-    const { categoryId } = categoryPost;
-    const category = await getArticleCategoryById(categoryId);
-    data.category = category;
+  const categoryPosts = await getCategoryPostsByArticleId(Number(id));
+  const data: any = { ...article, category: [] };
+  if (categoryPosts) {
+    await getCategorysByPosts(data, categoryPosts)
   }
+
+  data.keywords = data.keywords?.split(',')
   return api.success("获取成功！", data);
 }
 
 // 更新文章
 export async function PUT(request: NextRequest, context: { params: Params }) {
   const params: any = await request.json();
-  const { id, categoryId, title, content, keywords, excerpt, publishedAt } = params;
+  const { id, categoryIds, title, content, excerpt, publishedAt } = params;
+  let {keywords} = params
+
+  if(keywords instanceof Array) {
+    keywords = keywords?.join(',')
+  }
 
   const exist = await getArticleById(Number(id));
 
@@ -49,7 +54,7 @@ export async function PUT(request: NextRequest, context: { params: Params }) {
 
   const { userId, loginName } = getCurrentUser(request);
   // 验证必填参数不能为空
-  if (!categoryId) {
+  if (categoryIds?.length <= 0) {
     return api.error("分类不能为空！");
   }
 
@@ -58,20 +63,22 @@ export async function PUT(request: NextRequest, context: { params: Params }) {
   }
 
   // 判断分类是否存在
-  const category = await getArticleCategoryById(categoryId);
-
-  if (!category) {
-    return api.error("分类不存在！");
+  for (let index = 0; index < categoryIds.length; index++) {
+    const cid = categoryIds[index];
+    const category = await getArticleCategoryById(cid);
+    if (!category) {
+      return api.error("分类不存在！");
+    }
   }
 
-  const article = prisma.$transaction(async (tx) => {
+  const article = await prisma.$transaction(async (tx) => {
     // 入库
     const article = await updateArticle(
       id,
       {
         title,
         content: escapeHTML(content),
-        keywords: keywords?.join(","),
+        keywords,
         excerpt,
         publishedAt,
         createId: userId,
@@ -85,7 +92,7 @@ export async function PUT(request: NextRequest, context: { params: Params }) {
     );
 
     if (article) {
-      await updateArticleCategoryPost(id, categoryId, tx);
+      await updateArticleCategoryPost(id, categoryIds, tx);
     }
 
     return article;
@@ -104,7 +111,7 @@ export async function DELETE(request: NextRequest, context: { params: Params }) 
     return api.error("文章不存在！");
   }
 
-  const article = prisma.$transaction(async (tx) => {
+  const article = await prisma.$transaction(async (tx) => {
     const article = await updateArticle(
       Number(id),
       {

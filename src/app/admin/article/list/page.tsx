@@ -20,7 +20,13 @@ export default function List() {
       title: "分类",
       dataIndex: "categoryId",
       render: (_, record) => {
-        return record.category.name;
+        return record.category?.map((item: any) => {
+          return (
+            <Tag color="processing" key={item.id}>
+              {item.name}
+            </Tag>
+          );
+        });
       }
     },
     {
@@ -45,8 +51,13 @@ export default function List() {
       width: 150,
       valueType: "option",
       render: (text, record, _, action) => {
-        const categoryId = record.category?.id;
-        const publishedAt = dayjs.unix(record.publishedAt) 
+        const categoryIds = record.category?.map?.((item: any) => {
+          return {
+            value: item.id,
+            label: item.name
+          };
+        });
+        const publishedAt = dayjs.unix(record.publishedAt);
         return (
           <Space split={<Divider />}>
             <Save
@@ -55,26 +66,28 @@ export default function List() {
               onFinish={() => {
                 actionRef.current?.reload();
               }}
-              initialValues={{ ...record, categoryId, publishedAt }}
+              initialValues={{ ...record, categoryIds, publishedAt }}
             >
               <a key="editable">编辑</a>
             </Save>
             <a key="view" onClick={() => {}}>
               查看
             </a>
-            <Popconfirm title="确定删除吗?" onConfirm={async() => {
-              const res = await deleteArticle(record.id)
-              if(res.code !== 1) {
-                message.error(res.msg)
-                return
-              }
-              message.success(res.msg)
-              actionRef.current?.reload();
-
-            }}>
-            <a style={{color: '#ff4d4f'}} key="del">
-              删除
-            </a>
+            <Popconfirm
+              title="确定删除吗?"
+              onConfirm={async () => {
+                const res = await deleteArticle(record.id);
+                if (res.code !== 1) {
+                  message.error(res.msg);
+                  return;
+                }
+                message.success(res.msg);
+                actionRef.current?.reload();
+              }}
+            >
+              <a style={{ color: "#ff4d4f" }} key="del">
+                删除
+              </a>
             </Popconfirm>
           </Space>
         );

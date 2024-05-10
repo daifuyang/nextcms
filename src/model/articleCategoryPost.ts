@@ -40,41 +40,75 @@ export async function getCategoryPostByArticleId(articleId: number) {
   return categoryPost;
 }
 
+// 根据文章id获取所有分类关系
+export async function getCategoryPostsByArticleId(articleId: number) {
+  const categoryPosts = await prisma.cmsArticleCategoryPost.findMany({
+    where: {
+      articleId
+    }
+  });
+  return categoryPosts;
+}
+
+// 建立分类映射关系
+export async function createArticleCategoryPost(
+  articleId: number,
+  categoryIds: number[],
+  tx: Omit<PrismaClient, ITXClientDenyList> = prisma
+) {
+  const categoryPosts = await tx.cmsArticleCategoryPost.createMany({
+    data: categoryIds.map((categoryId) => {
+      return {
+        articleId,
+        categoryId
+      };
+    })
+  });
+
+  return categoryPosts;
+}
+
 // 更新文章和分类的关系
 export async function updateArticleCategoryPost(
   articleId: number,
-  categoryId: number,
+  categoryIds: number[],
   tx: Omit<PrismaClient, ITXClientDenyList> = prisma
 ) {
   // 查询之前的分类关系
-  const oldCategoryPost = await tx.cmsArticleCategoryPost.findFirst({
+  const oldCategoryPosts = await tx.cmsArticleCategoryPost.findMany({
     where: {
       articleId
     }
   });
 
-  let categoryPost: CategoryPost | null = null;
-  if (oldCategoryPost) {
-    // 更新为新的分类
-    categoryPost = await prisma.cmsArticleCategoryPost.update({
-      where: {
-        id: oldCategoryPost.id
-      },
-      data: {
-        categoryId
-      }
-    });
-  } else {
-    // 新增
-    categoryPost = await prisma.cmsArticleCategoryPost.create({
-      data: {
-        articleId,
-        categoryId
-      }
-    });
-  }
+  const set1 = new Set(categoryIds);
+  const set2 = new Set(oldCategoryPosts?.map((item) => item.categoryId));
 
-  return categoryPost;
+  // 找出需要删除的
+  const deleteCategoryIds = Array.from(set2).filter((item) => !set1.has(item));
+
+  // 找出需要新增的
+  const createCategoryIds = Array.from(set1).filter((item) => !set2.has(item));
+
+  return await prisma.$transaction(async (tx) => {
+    await tx.cmsArticleCategoryPost.deleteMany({
+      where: {
+        articleId,
+        categoryId: {
+          in: deleteCategoryIds
+        }
+      }
+    });
+
+    await tx.cmsArticleCategoryPost.createMany({
+      data: createCategoryIds.map((categoryId) => {
+        return {
+          articleId,
+          categoryId
+        };
+      })
+    });
+  });
 }
 
 // 删除文章和分类的关系
@@ -84,7 +118,7 @@ export async function deleteArticleCategoryPost(
 ) {
   const categoryPost = await tx.cmsArticleCategoryPost.findFirst({
     where: {
-      articleId,
+      articleId
     }
   });
 

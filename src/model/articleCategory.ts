@@ -140,9 +140,8 @@ export async function getArticleCategory(params: categoryParams) {
   const category = await prisma.cmsArticleCategory.findFirst({
     where
   });
-  return category
+  return category;
 }
-
 
 // 新增单个分类
 export async function createArticleCategory(data: Prisma.cmsArticleCategoryCreateInput) {
@@ -154,7 +153,10 @@ export async function createArticleCategory(data: Prisma.cmsArticleCategoryCreat
 }
 
 // 更新单个分类
-export async function updateArticleCategory(id: number, data: Prisma.cmsArticleCategoryUpdateInput) {
+export async function updateArticleCategory(
+  id: number,
+  data: Prisma.cmsArticleCategoryUpdateInput
+) {
   const key = `${categoryIdKey}${id}`;
   redis.del(key);
   redis.del(categoryTreeKey);
@@ -165,4 +167,19 @@ export async function updateArticleCategory(id: number, data: Prisma.cmsArticleC
     data
   });
   return category;
+}
+
+// 根据分类关系获取分类详细信息
+export async function getCategorysByPosts(target: any, categoryPosts: any[]) {
+
+  if(!target.category) {
+    target.category = []
+  }
+  
+  for (let index = 0; index < categoryPosts.length; index++) {
+    const post = categoryPosts[index];
+    const { categoryId } = post;
+    const category = await getArticleCategoryById(categoryId);
+    target.category.push(category);
+  }
 }

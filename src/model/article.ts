@@ -6,8 +6,8 @@
 
 import prisma from "@/utils/prisma";
 import { Prisma, PrismaClient, cmsArticle, cmsArticleCategory } from "@prisma/client";
-import { getCategoryPostByArticleId } from "./articleCategoryPost";
-import { getArticleCategoryById } from "./articleCategory";
+import { getCategoryPostByArticleId, getCategoryPostsByArticleId } from "./articleCategoryPost";
+import { getArticleCategoryById, getCategorysByPosts } from "./articleCategory";
 import redis from "@/utils/redis";
 import { modelDateTime, widthDateTime } from "./date";
 import { ITXClientDenyList } from "@prisma/client/runtime/library";
@@ -54,17 +54,9 @@ export async function getList(params: ParamsProps) {
 
   for (let index = 0; index < articles.length; index++) {
     const item = articles[index];
-
     widthDateTime(list[index], item);
-
-    const categoryPost = await getCategoryPostByArticleId(item.id);
-    const { categoryId } = categoryPost || {};
-    if (categoryId) {
-      const category = await getArticleCategoryById(categoryId);
-      if (category) {
-        list[index].category = category;
-      }
-    }
+    const categoryPosts = await getCategoryPostsByArticleId(item.id);
+    await getCategorysByPosts(list[index], categoryPosts);
   }
 
   return list;
@@ -93,8 +85,8 @@ export async function getArticleById(id: number) {
 }
 
 // 创建一篇文章
-export async function createArticle(data: Prisma.cmsArticleCreateInput) {
-  const article = await prisma.cmsArticle.create({
+export async function createArticle(data: Prisma.cmsArticleCreateInput, tx: Omit<PrismaClient, ITXClientDenyList> = prisma) {
+  const article = await tx.cmsArticle.create({
     data
   });
   return article;
