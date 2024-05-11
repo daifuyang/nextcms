@@ -72,7 +72,8 @@ export async function getArticleById(id: number) {
   } else {
     article = await prisma.cmsArticle.findFirst({
       where: {
-        id
+        id,
+        deletedAt: 0
       }
     });
 

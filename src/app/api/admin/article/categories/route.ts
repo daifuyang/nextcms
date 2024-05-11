@@ -12,6 +12,9 @@ import {
   getArticleCategoryCount,
   getArticleCategoryList
 } from "@/model/articleCategory";
+import { saveRoute } from "@/model/route";
+
+const routeKey = "/category/";
 
 export const categoryIdKey = "nextcms:article:category:id:";
 
@@ -35,7 +38,7 @@ async function categories(request: NextRequest) {
 async function addCategories(request: NextRequest) {
   const json = await request.json();
 
-  const { parentId, name, description, icon, order, status } = json;
+  const { parentId, name, alias, description, icon, order, status } = json;
 
   const { userId, loginName } = getCurrentUser(request);
 
@@ -59,24 +62,38 @@ async function addCategories(request: NextRequest) {
   const count = 0;
 
   // 不存在则新增分类
-  const category = await createArticleCategory({
-    parentId,
-    name,
-    description,
-    icon,
-    order,
-    count,
-    path,
-    status,
-    createId: userId,
-    creator: loginName,
-    updateId: userId,
-    updater: loginName,
-    createdAt: now(),
-    updatedAt: now()
+  const category = await prisma.$transaction(async (tx) => {
+    const category = await createArticleCategory({
+      parentId,
+      name,
+      description,
+      icon,
+      order,
+      count,
+      path,
+      status,
+      createId: userId,
+      creator: loginName,
+      updateId: userId,
+      updater: loginName,
+      createdAt: now(),
+      updatedAt: now()
+    });
+
+    if (category && alias) {
+      // 创建别名
+      await saveRoute(
+        {
+          fullUrl: alias,
+          url: `${routeKey}${category.id}`
+        },
+        tx
+      );
+    }
+
+    return category;
   });
   const key = `${categoryIdKey}${category.id}`;
-
   redis.set(key, stringify(category));
   return api.success("添加成功！");
 }

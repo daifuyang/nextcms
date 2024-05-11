@@ -7,7 +7,8 @@
 import prisma from "@/utils/prisma";
 import redis from "@/utils/redis";
 import { stringify } from "@/utils/util";
-import { Prisma, cmsArticleCategory } from "@prisma/client";
+import { Prisma, PrismaClient, cmsArticleCategory } from "@prisma/client";
+import { ITXClientDenyList } from "@prisma/client/runtime/library";
 
 const categoryIdKey = "nextcms:article:category:id:";
 const categoryTreeKey = "nextcms:article:category:tree";
@@ -109,7 +110,6 @@ export async function getArticleCategoryById(id: number) {
   const key = `${categoryIdKey}${id}`;
   const cache = await redis.get(key);
   let category: cmsArticleCategory | null = null;
-
   if (cache) {
     category = JSON.parse(cache);
   } else {
@@ -144,9 +144,12 @@ export async function getArticleCategory(params: categoryParams) {
 }
 
 // 新增单个分类
-export async function createArticleCategory(data: Prisma.cmsArticleCategoryCreateInput) {
+export async function createArticleCategory(
+  data: Prisma.cmsArticleCategoryCreateInput,
+  tx: Omit<PrismaClient, ITXClientDenyList> = prisma
+) {
   redis.del(categoryTreeKey);
-  const category = await prisma.cmsArticleCategory.create({
+  const category = await tx.cmsArticleCategory.create({
     data
   });
   return category;
@@ -155,12 +158,13 @@ export async function createArticleCategory(data: Prisma.cmsArticleCategoryCreat
 // 更新单个分类
 export async function updateArticleCategory(
   id: number,
-  data: Prisma.cmsArticleCategoryUpdateInput
+  data: Prisma.cmsArticleCategoryUpdateInput,
+  tx: Omit<PrismaClient, ITXClientDenyList> = prisma
 ) {
   const key = `${categoryIdKey}${id}`;
   redis.del(key);
   redis.del(categoryTreeKey);
-  const category = await prisma.cmsArticleCategory.update({
+  const category = await tx.cmsArticleCategory.update({
     where: {
       id
     },
@@ -171,11 +175,10 @@ export async function updateArticleCategory(
 
 // 根据分类关系获取分类详细信息
 export async function getCategorysByPosts(target: any, categoryPosts: any[]) {
-
-  if(!target.category) {
-    target.category = []
+  if (!target.category) {
+    target.category = [];
   }
-  
+
   for (let index = 0; index < categoryPosts.length; index++) {
     const post = categoryPosts[index];
     const { categoryId } = post;

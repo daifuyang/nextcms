@@ -1,7 +1,10 @@
 import { getPage } from "@/services/app/page";
+import { getArticle } from "@/services/app/article";
 import { notFound } from "next/navigation";
 import pathToRegexp, { Key } from "path-to-regexp";
 import ReactRender from "../ReactRender";
+
+import articleSchema from "@/template/article.json";
 
 interface Props {
   params: {
@@ -13,16 +16,14 @@ interface Props {
 interface RouteMatcher {
   regexp: RegExp;
   type: string;
-  pageId: string;
-  targetId?: string;
+  url: string;
   keys: Key[];
 }
 
 // 匹配路由
 interface MatchedRoute {
   type: string;
-  pageId: string;
-  targetId?: string;
+  url: string;
   params?: { [key: string]: string };
 }
 
@@ -36,45 +37,73 @@ interface MatchedRoute {
  ** 标签列表 -> tag/1 // tag/${id}
  */
 
+// 定义系统路由规则
+const routeRegex = [
+  "/page-:id", // 页面
+  "/article-:id", // 文章
+  "/category/:id", // 分类
+  "/search/:keywords", // 搜索
+  "/tag/:id" // 标签
+];
+
 // 定义示例数据格式
 const demoRoutes = [
   {
     regexp: "about",
-    type: "page",
-    pageId: "4"
+    type: "alias",
+    url: "/page-1"
   },
   {
     regexp: "news",
-    type: "category-list",
-    pageId: "3",
-    targetId: "1"
+    type: "alias",
+    url: "/category/1"
   },
   {
     regexp: "news/:id",
-    type: "category-article",
-    pageId: "4",
-    targetId: "1"
+    type: "alias",
+    url: "/article-:id?categoryId=1"
   },
   {
-    regexp: "readme",
-    type: "article",
-    pageId: "4",
-    targetId: "1"
+    regexp: "test",
+    type: "alias",
+    url: "/article-8"
   }
 ];
 
 const matchRoute = (path: string, routeMatchers: RouteMatcher[]): MatchedRoute | null => {
   for (const route of routeMatchers) {
+    // 匹配当前访问路由是否存在系统路由中
     const match = route.regexp.exec(path);
     if (match) {
       const params: { [key: string]: string } = {};
       route.keys.forEach((key, index) => {
         params[key.name] = match[index + 1];
       });
-      return { type: route.type, pageId: route.pageId, targetId: route.targetId, params };
+      return { type: route.type, url: route.url, params };
     }
   }
   return null;
+};
+
+// 判断路由是否在系统路由中
+const isMatchedInRouteRegex = (path: string = ""): any => {
+  if (!path) {
+    return false;
+  }
+
+  for (const pattern of routeRegex) {
+    const keys: Key[] = [];
+    const re = pathToRegexp(pattern, keys);
+    const match = re.exec(path);
+    if (match) {
+      const params: { [key: string]: string } = {};
+      keys.forEach((key, index) => {
+        params[key.name] = match[index + 1];
+      });
+      return { type: pattern, params };
+    }
+  }
+  return false;
 };
 
 export default async function Page(props: Props) {
@@ -83,22 +112,53 @@ export default async function Page(props: Props) {
   const routeMatchers: RouteMatcher[] = demoRoutes.map((route) => {
     const keys: Key[] = [];
     const regexp: RegExp = pathToRegexp(route.regexp, keys);
-    return { regexp, type: route.type, pageId: route.pageId, targetId: route.targetId, keys };
+    return { regexp, type: route.type, url: route.url, keys };
   });
   const matchedRoute = matchRoute(currentPath, routeMatchers);
-  let schema = null;
+  let matched: any = false;
   if (matchedRoute) {
-    const { pageId } = matchedRoute;
-    const res = await getPage(pageId);
-    if (res.code === 0) {
-      notFound();
-    }
-
-    schema = res.data.schema;
-
+    matched = isMatchedInRouteRegex(matchedRoute?.url);
+  } else {
+    matched = isMatchedInRouteRegex("/" + currentPath);
+  }
+  let schema = {};
+  if (matched) {
     // 根据pageId获取schema
-    switch (matchedRoute.type) {
-      case "page":
+    const { params = {} } = matched;
+    switch (matched.type) {
+      case routeRegex[0]: // 页面
+        if (!params?.id) {
+          notFound();
+        }
+        const pageRes = await getPage(params.id);
+        if (pageRes.code === 0) {
+          notFound();
+        }
+        schema = pageRes.data.schema;
+        break;
+      case routeRegex[1]:
+        if (!params?.id) {
+          notFound();
+        }
+        const articleRes: any = await getArticle(params.id);
+        if (articleRes.code === 0) {
+          notFound();
+        }
+        const articleState:any = {};
+        for (const key in articleRes?.data) {
+          if (articleRes.data.hasOwnProperty(key)) {
+            const value = articleRes.data[key];
+            articleState[key] = {
+              type: 'JSExpression',
+              value: JSON.stringify(value)
+            }
+          }
+        }
+        // 获取文章模板
+        articleSchema.state = {...articleSchema.state, ...articleState }
+        schema = articleSchema;
+        break;
+      default:
         break;
     }
   } else {

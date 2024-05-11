@@ -6,9 +6,7 @@ export default async function ReactRender(props: any) {
     const { dataSource = {} } = schema
     const apiList = dataSource?.list || []
     const state = await fetchData(apiList)
-
     schema.state = {...schema.state, ...state}
-    
     return <ReactRenderCore {...props} />
 }
 

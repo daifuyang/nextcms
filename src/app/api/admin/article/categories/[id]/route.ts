@@ -9,22 +9,34 @@ import {
   getArticleCategoryById,
   updateArticleCategory
 } from "@/model/articleCategory";
+import { getRouteByUrl, saveRoute } from "@/model/route";
 
 interface Params {
   id: string;
 }
 
+const routeKey = '/category/'
+
 export async function getCategory(request: NextRequest, context: { params: Params }) {
   const id = Number(context.params.id);
   // 获取单个分类
   const category = await getArticleCategoryById(id);
+
+  // 获取分类别名
+  if(category) {
+    const route = await getRouteByUrl(`${routeKey}${category.id}`)
+    if(route) {
+      (category as any).alias = route.fullUrl
+    }
+  }
+
   return api.success("获取成功！", category);
 }
 
 export async function updateCategory(request: NextRequest, context: { params: Params }) {
   const id = Number(context.params.id);
   const json = await request.json();
-  const { parentId, name, description, icon, order, status } = json;
+  const { parentId, name, alias, description, icon, order, status } = json;
   const { userId, loginName } = getCurrentUser(request);
   // 判断parentId是否存在
   if (isNumberEmpty(parentId)) {
@@ -46,20 +58,37 @@ export async function updateCategory(request: NextRequest, context: { params: Pa
   const path = parentId ? `0-${parentId}` : "0";
   const count = 0;
   // 不存在则新增分类
-  const category = await updateArticleCategory(id, {
-    parentId,
-    name,
-    description,
-    icon,
-    order,
-    count,
-    path,
-    status,
-    createId: userId,
-    creator: loginName,
-    updateId: userId,
-    updater: loginName
+
+  const category = await prisma.$transaction(async (tx) => {
+    const category = await updateArticleCategory(id, {
+      parentId,
+      name,
+      description,
+      icon,
+      order,
+      count,
+      path,
+      status,
+      createId: userId,
+      creator: loginName,
+      updateId: userId,
+      updater: loginName
+    });
+
+    if (category && alias) {
+      // 创建别名
+      await saveRoute(
+        {
+          fullUrl: alias,
+          url: `${routeKey}${category.id}`
+        },
+        tx
+      );
+    }
+
+    return category
   });
+
   return api.success("更新成功！", category);
 }
 

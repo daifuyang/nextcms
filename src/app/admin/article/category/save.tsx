@@ -87,6 +87,7 @@ export default function Save(props: Props) {
       <ProFormTreeSelect
         fieldProps={{
           style: { maxWidth: 288 },
+          treeDefaultExpandAll: true,
           fieldNames: {
             value: 'id',
             label: 'name',

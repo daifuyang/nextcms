@@ -22,9 +22,9 @@ model cmsPage {
   creator     String  @map(name: "creator") @db.VarChar(50)
   updateId    Int     @map(name: "update_id")
   updater     String  @map(name: "updater") @db.VarChar(50)
-  createdAt   Int  @map(name: "created_at")
-  updatedAt   Int  @map(name: "updated_at")
-  deletedAt   Int  @default(0) @map(name: "deleted_at")
+  createdAt   Int     @map(name: "created_at")
+  updatedAt   Int     @map(name: "updated_at")
+  deletedAt   Int     @default(0) @map(name: "deleted_at")
 
   @@map("cms_page")
 }
@@ -39,7 +39,7 @@ model cmsPageLog {
   version     Int     @map(name: "version")
   createId    Int     @map(name: "create_id")
   creator     String  @map(name: "creator") @db.VarChar(50)
-  createdAt   Int  @map("created_at")
+  createdAt   Int     @map("created_at")
 
   @@map("cms_page_log")
 }
@@ -53,9 +53,9 @@ model cmsNav {
   creator     String  @map(name: "creator") @db.VarChar(200)
   updateId    Int     @map(name: "update_id")
   updater     String  @map(name: "updater") @db.VarChar(50)
-  createdAt   Int  @map("created_at")
-  updatedAt   Int  @map("updated_at")
-  deletedAt   Int  @default(0) @map("deleted_at")
+  createdAt   Int     @map("created_at")
+  updatedAt   Int     @map("updated_at")
+  deletedAt   Int     @default(0) @map("deleted_at")
 
   @@map("cms_nav")
 }
@@ -74,9 +74,9 @@ model cmsNavItem {
   creator     String  @map(name: "creator") @db.VarChar(50)
   updateId    Int     @map(name: "update_id")
   updater     String  @map(name: "updater") @db.VarChar(50)
-  createdAt   Int  @map("created_at")
-  updatedAt   Int  @map("updated_at")
-  deletedAt   Int  @default(0) @map("deleted_at")
+  createdAt   Int     @map("created_at")
+  updatedAt   Int     @map("updated_at")
+  deletedAt   Int     @default(0) @map("deleted_at")
 
   @@map("cms_navitem")
 }
@@ -94,15 +94,15 @@ model cmsUser {
   gender      Int?    @map("gender") @db.TinyInt()
   avatar      String? @map("avatar") @db.VarChar(255)
   lastLoginIp String? @map("last_login_ip") @db.VarChar(128)
-  lastLoginAt Int? @map("last_login_at")
+  lastLoginAt Int?    @map("last_login_at")
   remark      String? @map("remark") @db.VarChar(255)
   createId    Int     @map("create_id")
   creator     String  @map("creator") @db.VarChar(50)
   updateId    Int     @map("update_id")
   updater     String  @map("updater") @db.VarChar(50)
-  createdAt   Int  @map("created_at")
-  updatedAt   Int  @map("updated_at")
-  deletedAt   Int  @default(0) @map("deleted_at")
+  createdAt   Int     @map("created_at")
+  updatedAt   Int     @map("updated_at")
+  deletedAt   Int     @default(0) @map("deleted_at")
 
   @@map("cms_user")
 }
@@ -113,8 +113,8 @@ model cmsUserToken {
   userId       Int    @map("user_id")
   accessToken  String @map("access_token") @db.VarChar(255)
   refreshToken String @map("refresh_token") @db.VarChar(255)
-  createdAt    Int @map("created_at")
-  expiryAt     Int @map("expiry_at")
+  createdAt    Int    @map("created_at")
+  expiryAt     Int    @map("expiry_at")
 
   @@map("cms_user_token")
 }
@@ -128,9 +128,9 @@ model cmsUserRole {
   creator     String  @map("creator") @db.VarChar(50)
   updateId    Int     @map("update_id")
   updater     String  @map("updater") @db.VarChar(50)
-  createdAt   Int  @map("created_at")
-  updatedAt   Int  @map("updated_at")
-  deletedAt   Int  @default(0) @map("deleted_at")
+  createdAt   Int     @map("created_at")
+  updatedAt   Int     @map("updated_at")
+  deletedAt   Int     @default(0) @map("deleted_at")
 
   @@map("cms_user_role")
 }
@@ -157,9 +157,9 @@ model cmsResource {
   creator   String  @map("creator") @db.VarChar(50)
   updateId  Int     @map("update_id")
   updater   String  @map("updater") @db.VarChar(50)
-  createdAt Int  @map("created_at")
-  updatedAt Int  @map("updated_at")
-  deletedAt Int  @default(0) @map("deleted_at")
+  createdAt Int     @map("created_at")
+  updatedAt Int     @map("updated_at")
+  deletedAt Int     @default(0) @map("deleted_at")
 
   @@map("cms_resource")
 }
@@ -174,9 +174,9 @@ model cmsResourceCategory {
   creator     String  @map("creator") @db.VarChar(50)
   updateId    Int     @map("update_id")
   updater     String  @map("updater") @db.VarChar(50)
-  createdAt   Int  @map("created_at")
-  updatedAt   Int  @map("updated_at")
-  deletedAt   Int  @default(0) @map("deleted_at")
+  createdAt   Int     @map("created_at")
+  updatedAt   Int     @map("updated_at")
+  deletedAt   Int     @default(0) @map("deleted_at")
 
   @@map("cms_resource_category")
 }
@@ -203,14 +203,14 @@ model cmsArticle {
   articleStatus  Int?    @default(1) @map("article_status") @db.TinyInt // 文章状态
   commentStatus  Int?    @default(1) @map("comment_status") @db.TinyInt // 评论状态
   order          Int?    @map("order") // 排序
-  publishedAt    Int? @map("published_at") // 发布时间
+  publishedAt    Int?    @map("published_at") // 发布时间
   createId       Int     @map("create_id")
   creator        String  @map("creator") @db.VarChar(50)
   updateId       Int     @map("update_id")
   updater        String  @map("updater") @db.VarChar(50)
-  createdAt      Int  @map("created_at")
-  updatedAt      Int  @map("updated_at")
-  deletedAt      Int  @default(0) @map("deleted_at")
+  createdAt      Int     @map("created_at")
+  updatedAt      Int     @map("updated_at")
+  deletedAt      Int     @default(0) @map("deleted_at")
 
   @@map("cms_article")
 }
@@ -233,9 +233,9 @@ model cmsArticleCategory {
   creator        String  @map("creator") @db.VarChar(50)
   updateId       Int     @map("update_id")
   updater        String  @map("updater") @db.VarChar(50)
-  createdAt      Int  @map("created_at")
-  updatedAt      Int  @map("updated_at")
-  deletedAt      Int  @default(0) @map("deleted_at")
+  createdAt      Int     @map("created_at")
+  updatedAt      Int     @map("updated_at")
+  deletedAt      Int     @default(0) @map("deleted_at")
 
   @@map("cms_article_category")
 }
@@ -257,4 +257,16 @@ model systemConfig {
   value String @map("value") @db.VarChar(255)
 
   @@map("system_config")
+}
+
+// 路由别名
+model systemRoute {
+  id     Int  @id @default(autoincrement()) @map("id")
+  order  Int? @map("order") // 排序
+  status Int? @default(1) @map("status") @db.TinyInt() // 状态 1启用 0禁用
+  type   Int? @default(1) @map("type") @db.TinyInt() // 类型 1系统 2自定义
+  fullUrl String @map("full_url") @db.VarChar(255) // 别名
+  url    String @map("url") @db.VarChar(255)
+
+  @@map("system_route")
 }

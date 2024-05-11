@@ -34,14 +34,14 @@ export function escapeHTML(html: string) {
   if (!html) {
     return;
   }
-  return xss(html)
+  return xss(html);
 }
 
 export function decodeEntities(encodedString: string) {
   if (!encodedString) {
-    return '';
+    return "";
   }
-  return 
+  return;
 }
 
 export function stringify(obj: any) {
@@ -56,20 +56,36 @@ export function stringify(obj: any) {
 // 定义一个函数，用于将 BigInt 类型的值转换为字符串
 export function convertBigIntToString(obj: DataWithBigInt): any {
   // 检查当前对象的类型
-  if (typeof obj === 'bigint') {
-      // 如果是 BigInt 类型，则将其转换为字符串
-      return (obj as any).toString();
+  if (typeof obj === "bigint") {
+    // 如果是 BigInt 类型，则将其转换为字符串
+    return (obj as any).toString();
   } else if (Array.isArray(obj)) {
-      // 如果是数组，则递归处理数组中的每个元素
-      return obj.map(item => convertBigIntToString(item));
-  } else if (typeof obj === 'object' && obj !== null) {
-      // 如果是对象，则递归处理对象的每个属性值
-      const newObj: DataWithBigInt = {};
-      for (const key in obj) {
-          newObj[key] = convertBigIntToString(obj[key]);
-      }
-      return newObj;
+    // 如果是数组，则递归处理数组中的每个元素
+    return obj.map((item) => convertBigIntToString(item));
+  } else if (typeof obj === "object" && obj !== null) {
+    // 如果是对象，则递归处理对象的每个属性值
+    const newObj: DataWithBigInt = {};
+    for (const key in obj) {
+      newObj[key] = convertBigIntToString(obj[key]);
+    }
+    return newObj;
   }
   // 其他情况下直接返回原始值
   return obj;
+}
+
+// 判断对象是否相等
+export function isObjEqual(obj1: any, obj2: any) {
+  // 判断对象
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+  for (const key of keys1) {
+    if (!isObjEqual(obj1[key], obj2[key])) {
+      return false;
+    }
+  }
+  return true;
 }

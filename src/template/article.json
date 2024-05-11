@@ -1,0 +1,267 @@
+{
+    "componentName": "Page",
+    "id": "node_dockcviv8fo1",
+    "props": {
+        "ref": "outerView",
+        "style": {
+            "height": "100%"
+        }
+    },
+    "docId": "doclaqkk3b9",
+    "fileName": "/",
+    "dataSource": {
+        "list": []
+    },
+    "state": {
+        "title": {
+            "type": "JSExpression",
+            "value": "'文章标题'"
+        }
+    },
+    "css": "html,\r\nbody {\r\n  background-color: #f5f5f5;\r\n}",
+    "lifeCycles": {
+        "componentDidMount": {
+            "type": "JSFunction",
+            "value": "function componentDidMount() {\n  console.log(\"state\", this.state);\n}",
+            "source": "function componentDidMount() {\n  console.log(\"state\", this.state);\n}"
+        }
+    },
+    "methods": {},
+    "originCode": "class LowcodeComponent extends Component {\n  state = {\n      title: '文章标题'\n  }\n  componentDidMount() {\n    console.log(\"state\",this.state)\n  }\n}",
+    "hidden": false,
+    "title": "",
+    "isLocked": false,
+    "condition": true,
+    "conditionGroup": "",
+    "children": [
+        {
+            "componentName": "Header",
+            "id": "node_ocluw9z6ia1",
+            "props": {},
+            "hidden": false,
+            "title": "",
+            "isLocked": false,
+            "condition": true,
+            "conditionGroup": "",
+            "children": [
+                {
+                    "componentName": "Navbar",
+                    "id": "node_oclvc2wdup3",
+                    "props": {
+                        "brand": {
+                            "type": "JSSlot",
+                            "value": [
+                                {
+                                    "componentName": "Image",
+                                    "id": "node_oclvc2wdup5",
+                                    "props": {
+                                        "src": "https://img1.baidu.com/it/u=3481842823,1985834994&fm=253&fmt=auto&app=138&f=JPEG?w=200&h=200",
+                                        "alt": "logo",
+                                        "width": 64,
+                                        "height": ""
+                                    },
+                                    "hidden": false,
+                                    "title": "",
+                                    "isLocked": false,
+                                    "condition": true,
+                                    "conditionGroup": ""
+                                }
+                            ]
+                        },
+                        "menuAlign": "left",
+                        "menu": {
+                            "type": "JSSlot",
+                            "value": [
+                                {
+                                    "componentName": "NextMenu",
+                                    "id": "node_oclvc2wdup7",
+                                    "props": {
+                                        "items": [
+                                            {
+                                                "label": "首页",
+                                                "href": "/"
+                                            },
+                                            {
+                                                "label": "关于我们",
+                                                "href": "/about"
+                                            },
+                                            {
+                                                "label": "新闻中心",
+                                                "href": "/news"
+                                            },
+                                            {
+                                                "label": "nextcms",
+                                                "href": "/nextcms"
+                                            }
+                                        ],
+                                        "fontSize": "16",
+                                        "color": "#000000",
+                                        "hoverColor": "#1677ff",
+                                        "bgColor": ""
+                                    },
+                                    "hidden": false,
+                                    "title": "",
+                                    "isLocked": false,
+                                    "condition": true,
+                                    "conditionGroup": ""
+                                }
+                            ]
+                        },
+                        "style": {
+                            "backgroundColor": "#ffffff",
+                            "marginBottom": "0px"
+                        }
+                    },
+                    "hidden": false,
+                    "title": "",
+                    "isLocked": false,
+                    "condition": true,
+                    "conditionGroup": ""
+                }
+            ]
+        },
+        {
+            "componentName": "Main",
+            "id": "node_oclw1qyayn2",
+            "props": {},
+            "hidden": false,
+            "title": "",
+            "isLocked": false,
+            "condition": true,
+            "conditionGroup": "",
+            "children": [
+                {
+                    "componentName": "Div",
+                    "id": "node_oclw1sn9p6j",
+                    "props": {
+                        "style": {
+                            "marginTop": "16px"
+                        }
+                    },
+                    "hidden": false,
+                    "title": "",
+                    "isLocked": false,
+                    "condition": true,
+                    "conditionGroup": "",
+                    "children": [
+                        {
+                            "componentName": "Container",
+                            "id": "node_oclw1sn9p63",
+                            "props": {
+                                "fluid": false
+                            },
+                            "hidden": false,
+                            "title": "",
+                            "isLocked": false,
+                            "condition": true,
+                            "conditionGroup": "",
+                            "children": [
+                                {
+                                    "componentName": "Row",
+                                    "id": "node_oclw1sn9p64",
+                                    "props": {},
+                                    "hidden": false,
+                                    "title": "",
+                                    "isLocked": false,
+                                    "condition": true,
+                                    "conditionGroup": "",
+                                    "children": [
+                                        {
+                                            "componentName": "Col",
+                                            "id": "node_oclw1sn9p6h",
+                                            "props": {
+                                                "xs": 12,
+                                                "sm": 12,
+                                                "md": 6,
+                                                "lg": 8,
+                                                "xl": 8,
+                                                "xxl": 8
+                                            },
+                                            "hidden": false,
+                                            "title": "",
+                                            "isLocked": false,
+                                            "condition": true,
+                                            "conditionGroup": "",
+                                            "children": [
+                                                {
+                                                    "componentName": "Div",
+                                                    "id": "node_oclw1snbrp3",
+                                                    "props": {
+                                                        "style": {
+                                                            "backgroundColor": "#ffffff",
+                                                            "borderRadius": "8px",
+                                                            "paddingTop": "24px",
+                                                            "paddingBottom": "24px",
+                                                            "paddingLeft": "24px",
+                                                            "paddingRight": "24px"
+                                                        }
+                                                    },
+                                                    "hidden": false,
+                                                    "title": "卡片分组",
+                                                    "isLocked": false,
+                                                    "condition": true,
+                                                    "conditionGroup": "",
+                                                    "children": [
+                                                        {
+                                                            "componentName": "Title",
+                                                            "id": "node_oclw1snbrp5",
+                                                            "props": {
+                                                                "children": {
+                                                                    "type": "JSExpression",
+                                                                    "value": "this.state.title",
+                                                                    "mock": "产品经理不香了：面试造飞机，进来拧螺丝"
+                                                                },
+                                                                "level": 1,
+                                                                "style": {
+                                                                    "marginBottom": "20px",
+                                                                    "fontSize": "24px",
+                                                                    "color": "rgb(26, 26, 26)"
+                                                                }
+                                                            },
+                                                            "hidden": false,
+                                                            "title": "",
+                                                            "isLocked": false,
+                                                            "condition": true,
+                                                            "conditionGroup": ""
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "componentName": "Col",
+                                            "id": "node_oclw1sn9p6i",
+                                            "props": {
+                                                "xs": 12,
+                                                "sm": 12,
+                                                "md": 6,
+                                                "lg": 4,
+                                                "xl": 4,
+                                                "xxl": 4
+                                            },
+                                            "hidden": false,
+                                            "title": "",
+                                            "isLocked": false,
+                                            "condition": true,
+                                            "conditionGroup": ""
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "componentName": "Footer",
+            "id": "node_oclv7g6te43",
+            "props": {},
+            "hidden": false,
+            "title": "",
+            "isLocked": false,
+            "condition": true,
+            "conditionGroup": ""
+        }
+    ]
+}
