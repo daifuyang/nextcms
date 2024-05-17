@@ -4,7 +4,12 @@ import { Dropdown } from "antd";
 export default function MyDropdown(props: any) {
   const { disabled, buttonIconClassName, buttonLabel, menu } = props
   return (
-    <Dropdown menu={menu}>
+    <Dropdown getPopupContainer={ node => {
+      if(node) {
+        return node.parentNode;
+      }
+      return document.body;
+    } } menu={menu}>
       <button disabled={disabled} className="toolbar-item block-controls" type="button">
         {buttonIconClassName && <span className={buttonIconClassName} />}
         {buttonLabel && (

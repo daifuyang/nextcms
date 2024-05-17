@@ -11,40 +11,40 @@ import {
   $isCodeNode,
   CODE_LANGUAGE_FRIENDLY_NAME_MAP,
   CODE_LANGUAGE_MAP,
-  getLanguageFriendlyName,
-} from '@lexical/code';
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from '@lexical/link';
+  getLanguageFriendlyName
+} from "@lexical/code";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
   $isListNode,
   INSERT_CHECK_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
-  ListNode,
-} from '@lexical/list';
+  ListNode
+} from "@lexical/list";
 
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $isDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode';
-import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode';
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $isDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
+import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
 import {
   $createHeadingNode,
   $createQuoteNode,
   $isHeadingNode,
   $isQuoteNode,
-  HeadingTagType,
-} from '@lexical/rich-text';
+  HeadingTagType
+} from "@lexical/rich-text";
 import {
   $getSelectionStyleValueForProperty,
   $isParentElementRTL,
   $patchStyleText,
-  $setBlocksType,
-} from '@lexical/selection';
-import { $isTableNode, $isTableSelection } from '@lexical/table';
+  $setBlocksType
+} from "@lexical/selection";
+import { $isTableNode, $isTableSelection } from "@lexical/table";
 import {
   $findMatchingParent,
   $getNearestBlockElementAncestorOrThrow,
   $getNearestNodeOfType,
-  mergeRegister,
-} from '@lexical/utils';
+  mergeRegister
+} from "@lexical/utils";
 import {
   $createParagraphNode,
   $getNodeByKey,
@@ -67,52 +67,47 @@ import {
   OUTDENT_CONTENT_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
-  UNDO_COMMAND,
-} from 'lexical';
-import { Dispatch, useCallback, useEffect, useState } from 'react';
-import * as React from 'react';
+  UNDO_COMMAND
+} from "lexical";
+import { Dispatch, useCallback, useEffect, useState } from "react";
+import * as React from "react";
 
-import {
-  INSERT_TABLE_COMMAND,
+import { IS_APPLE } from "../../shared/environment";
 
-} from '@lexical/table';
+import DropdownColorPicker from "../../ui/DropdownColorPicker";
+import { getSelectedNode } from "../../utils/getSelectedNode";
+import { sanitizeUrl } from "../../utils/url";
 
-import { IS_APPLE } from '../../shared/environment';
+import { INSERT_PAGE_BREAK } from "../PageBreakPlugin";
+import FontSize from "./fontSize";
+import { RedoOutlined, UndoOutlined } from "@ant-design/icons";
+import MyDropdown from "../../components/MyDropdown";
 
-import DropdownColorPicker from '../../ui/DropdownColorPicker';
-import { getSelectedNode } from '../../utils/getSelectedNode';
-import { sanitizeUrl } from '../../utils/url';
+import { MenuProps } from "antd";
+import { INSERT_IMAGE_COMMAND } from "../ImagesPlugin";
 
-import { INSERT_PAGE_BREAK } from '../PageBreakPlugin';
-import FontSize from './fontSize';
-import { RedoOutlined, UndoOutlined } from '@ant-design/icons';
-import MyDropdown from '../../components/MyDropdown';
-
-import { MenuProps } from 'antd';
 
 const blockTypeToBlockName = {
-  bullet: '符号列表',
-  check: '复选框列表',
-  code: '代码块',
-  h1: '标题1',
-  h2: '标题2',
-  h3: '标题3',
-  number: '数字列表',
-  paragraph: '段落',
-  quote: '引用',
+  bullet: "符号列表",
+  check: "复选框列表",
+  code: "代码块",
+  h1: "标题1",
+  h2: "标题2",
+  h3: "标题3",
+  number: "数字列表",
+  paragraph: "段落",
+  quote: "引用"
 };
 
 const rootTypeToRootName = {
-  root: 'Root',
-  table: 'Table',
+  root: "Root",
+  table: "Table"
 };
 
 function getCodeLanguageOptions(): [string, string][] {
   const options: [string, string][] = [];
 
-  for (const [lang, friendlyName] of Object.entries(
-    CODE_LANGUAGE_FRIENDLY_NAME_MAP,
-  )) {
+  for (const [lang, friendlyName] of Object.entries(CODE_LANGUAGE_FRIENDLY_NAME_MAP)) {
     options.push([lang, friendlyName]);
   }
 
@@ -122,72 +117,72 @@ function getCodeLanguageOptions(): [string, string][] {
 const CODE_LANGUAGE_OPTIONS = getCodeLanguageOptions();
 
 const FONT_FAMILY_OPTIONS: [string, string][] = [
-  ['Arial', 'Arial'],
-  ['Courier New', 'Courier New'],
-  ['Georgia', 'Georgia'],
-  ['Times New Roman', 'Times New Roman'],
-  ['Trebuchet MS', 'Trebuchet MS'],
-  ['Verdana', 'Verdana'],
+  ["Arial", "Arial"],
+  ["Courier New", "Courier New"],
+  ["Georgia", "Georgia"],
+  ["Times New Roman", "Times New Roman"],
+  ["Trebuchet MS", "Trebuchet MS"],
+  ["Verdana", "Verdana"]
 ];
 
 const FONT_SIZE_OPTIONS: [string, string][] = [
-  ['10px', '10px'],
-  ['11px', '11px'],
-  ['12px', '12px'],
-  ['13px', '13px'],
-  ['14px', '14px'],
-  ['15px', '15px'],
-  ['16px', '16px'],
-  ['17px', '17px'],
-  ['18px', '18px'],
-  ['19px', '19px'],
-  ['20px', '20px'],
+  ["10px", "10px"],
+  ["11px", "11px"],
+  ["12px", "12px"],
+  ["13px", "13px"],
+  ["14px", "14px"],
+  ["15px", "15px"],
+  ["16px", "16px"],
+  ["17px", "17px"],
+  ["18px", "18px"],
+  ["19px", "19px"],
+  ["20px", "20px"]
 ];
 
 const ELEMENT_FORMAT_OPTIONS: {
-  [key in Exclude<ElementFormatType, ''>]: {
+  [key in Exclude<ElementFormatType, "">]: {
     icon: string;
     iconRTL: string;
     name: string;
   };
 } = {
   center: {
-    icon: 'center-align',
-    iconRTL: 'center-align',
-    name: 'Center Align',
+    icon: "center-align",
+    iconRTL: "center-align",
+    name: "Center Align"
   },
   end: {
-    icon: 'right-align',
-    iconRTL: 'left-align',
-    name: 'End Align',
+    icon: "right-align",
+    iconRTL: "left-align",
+    name: "End Align"
   },
   justify: {
-    icon: 'justify-align',
-    iconRTL: 'justify-align',
-    name: 'Justify Align',
+    icon: "justify-align",
+    iconRTL: "justify-align",
+    name: "Justify Align"
   },
   left: {
-    icon: 'left-align',
-    iconRTL: 'left-align',
-    name: '左对齐',
+    icon: "left-align",
+    iconRTL: "left-align",
+    name: "左对齐"
   },
   right: {
-    icon: 'right-align',
-    iconRTL: 'right-align',
-    name: 'Right Align',
+    icon: "right-align",
+    iconRTL: "right-align",
+    name: "Right Align"
   },
   start: {
-    icon: 'left-align',
-    iconRTL: 'right-align',
-    name: 'Start Align',
-  },
+    icon: "left-align",
+    iconRTL: "right-align",
+    name: "Start Align"
+  }
 };
 
 function BlockFormatDropDown({
   editor,
   blockType,
   rootType,
-  disabled = false,
+  disabled = false
 }: {
   blockType: keyof typeof blockTypeToBlockName;
   rootType: keyof typeof rootTypeToRootName;
@@ -213,7 +208,7 @@ function BlockFormatDropDown({
   };
 
   const formatBulletList = () => {
-    if (blockType !== 'bullet') {
+    if (blockType !== "bullet") {
       editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
     } else {
       formatParagraph();
@@ -221,7 +216,7 @@ function BlockFormatDropDown({
   };
 
   const formatCheckList = () => {
-    if (blockType !== 'check') {
+    if (blockType !== "check") {
       editor.dispatchCommand(INSERT_CHECK_LIST_COMMAND, undefined);
     } else {
       formatParagraph();
@@ -229,7 +224,7 @@ function BlockFormatDropDown({
   };
 
   const formatNumberedList = () => {
-    if (blockType !== 'number') {
+    if (blockType !== "number") {
       editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
     } else {
       formatParagraph();
@@ -237,7 +232,7 @@ function BlockFormatDropDown({
   };
 
   const formatQuote = () => {
-    if (blockType !== 'quote') {
+    if (blockType !== "quote") {
       editor.update(() => {
         const selection = $getSelection();
         $setBlocksType(selection, () => $createQuoteNode());
@@ -246,7 +241,7 @@ function BlockFormatDropDown({
   };
 
   const formatCode = () => {
-    if (blockType !== 'code') {
+    if (blockType !== "code") {
       editor.update(() => {
         let selection = $getSelection();
         if (selection !== null) {
@@ -270,85 +265,90 @@ function BlockFormatDropDown({
     {
       key: "paragraph",
       icon: <i className="icon paragraph" />,
-      label: "段落",
+      label: "段落"
     },
     {
       key: "h1",
       icon: <i className="icon h1" />,
-      label: "标题1",
+      label: "标题1"
     },
     {
       key: "h2",
       icon: <i className="icon h2" />,
-      label: "标题2",
+      label: "标题2"
     },
     {
       key: "h3",
       icon: <i className="icon h3" />,
-      label: "标题3",
+      label: "标题3"
     },
     {
       key: "bullet",
       icon: <i className="icon bullet-list" />,
-      label: "符号列表",
+      label: "符号列表"
     },
     {
       key: "number",
       icon: <i className="icon numbered-list" />,
-      label: "编号列表",
+      label: "编号列表"
     },
     {
       key: "check",
       icon: <i className="icon check-list" />,
-      label: "复选框列表",
+      label: "复选框列表"
     },
     {
       key: "quote",
       icon: <i className="icon quote" />,
-      label: "引用",
+      label: "引用"
     },
     {
       key: "code",
       icon: <i className="icon code" />,
-      label: "代码块",
+      label: "代码块"
     }
   ];
 
-  const onClick: MenuProps['onClick'] = ({ key }: any) => {
+  const onClick: MenuProps["onClick"] = ({ key }: any) => {
     switch (key) {
       case "paragraph":
-        formatParagraph()
+        formatParagraph();
         break;
       case "h1":
-        formatHeading("h1")
+        formatHeading("h1");
         break;
       case "h2":
-        formatHeading("h2")
+        formatHeading("h2");
         break;
       case "h3":
-        formatHeading("h3")
+        formatHeading("h3");
         break;
       case "bullet":
-        formatBulletList()
+        formatBulletList();
         break;
       case "number":
-        formatNumberedList()
+        formatNumberedList();
         break;
       case "check":
-        formatCheckList()
+        formatCheckList();
         break;
       case "quote":
-        formatQuote()
+        formatQuote();
         break;
       case "code":
-        formatCode()
+        formatCode();
         break;
     }
   };
 
   return (
-    <MyDropdown menu={{ items, onClick, selectable: true, selectedKeys: blockType }} disabled={disabled} buttonIconClassName={'icon block-type ' + blockType} buttonLabel={blockTypeToBlockName[blockType]} />
-  )
+    <MyDropdown
+      menu={{ items, onClick, selectable: true, selectedKeys: blockType }}
+      disabled={disabled}
+      buttonIconClassName={"icon block-type " + blockType}
+      buttonLabel={blockTypeToBlockName[blockType]}
+    />
+  );
 }
 
 function Divider(): JSX.Element {
@@ -360,7 +360,7 @@ function FontDropDown({
   editor,
   value,
   style,
-  disabled = false,
+  disabled = false
 }: {
   editor: LexicalEditor;
   value: string;
@@ -373,119 +373,129 @@ function FontDropDown({
         const selection = $getSelection();
         if (selection !== null) {
           $patchStyleText(selection, {
-            [style]: option,
+            [style]: option
           });
         }
       });
     },
-    [editor, style],
+    [editor, style]
   );
 
-  const items = (style === 'font-family' ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(([option, text]) => {
-    return {
-      key: option,
-      label: text
+  const items = (style === "font-family" ? FONT_FAMILY_OPTIONS : FONT_SIZE_OPTIONS).map(
+    ([option, text]) => {
+      return {
+        key: option,
+        label: text
+      };
     }
-  })
+  );
 
-  const onClick: MenuProps['onClick'] = ({ key }) => {
-    handleClick(key)
+  const onClick: MenuProps["onClick"] = ({ key }) => {
+    handleClick(key);
   };
 
   return (
-    <MyDropdown menu={{ items, onClick, selectable: true, selectedKeys: [value] }} disabled={disabled} buttonClassName={'toolbar-item ' + style} buttonLabel={value}
-      buttonIconClassName={
-        style === 'font-family' ? 'icon block-type font-family' : ''
-      } />
-  )
+    <MyDropdown
+      menu={{ items, onClick, selectable: true, selectedKeys: [value] }}
+      disabled={disabled}
+      buttonClassName={"toolbar-item " + style}
+      buttonLabel={value}
+      buttonIconClassName={style === "font-family" ? "icon block-type font-family" : ""}
+    />
+  );
 }
 
 function ElementFormatDropdown({
   editor,
   value,
   isRTL,
-  disabled = false,
+  disabled = false
 }: {
   editor: LexicalEditor;
   value: ElementFormatType;
   isRTL: boolean;
   disabled: boolean;
 }) {
-  const formatOption = ELEMENT_FORMAT_OPTIONS[value || 'left'];
+  const formatOption = ELEMENT_FORMAT_OPTIONS[value || "left"];
 
-  return <MyDropdown menu={{
-    items: [{
-      key: "left",
-      icon: <i className="icon left-align" />,
-      label: "左对齐"
-    },
-    {
-      key: "center",
-      icon: <i className="icon center-align" />,
-      label: "居中对齐"
-    },
-    {
-      key: "right",
-      icon: <i className="icon right-align" />,
-      label: "右对齐"
-    },
-    {
-      key: "justify",
-      icon: <i className="icon justify-align" />,
-      label: "两端对齐"
-    },
-    {
-      type: 'divider',
-    },
-    {
-      key: "outdent",
-      icon: <i className="icon outdent" />,
-      label: "减少缩进"
-    },
-    {
-      key: "indent",
-      icon: <i className="icon indent" />,
-      label: "增加缩进"
-    }],
-    onClick: ({ key }: any) => {
-      switch (key) {
-        case "left":
-        case "center":
-        case "right":
-        case "justify":
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, key);
-          break;
-        case "outdent":
-          editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
-          break;
-        case "indent":
-          editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
-          break;
-      }
-    }
-  }} disabled={disabled} buttonLabel={formatOption.name} buttonIconClassName={`icon ${formatOption.icon}`}
-    buttonClassName="toolbar-item spaced alignment" />
+  return (
+    <MyDropdown
+      menu={{
+        items: [
+          {
+            key: "left",
+            icon: <i className="icon left-align" />,
+            label: "左对齐"
+          },
+          {
+            key: "center",
+            icon: <i className="icon center-align" />,
+            label: "居中对齐"
+          },
+          {
+            key: "right",
+            icon: <i className="icon right-align" />,
+            label: "右对齐"
+          },
+          {
+            key: "justify",
+            icon: <i className="icon justify-align" />,
+            label: "两端对齐"
+          },
+          {
+            type: "divider"
+          },
+          {
+            key: "outdent",
+            icon: <i className="icon outdent" />,
+            label: "减少缩进"
+          },
+          {
+            key: "indent",
+            icon: <i className="icon indent" />,
+            label: "增加缩进"
+          }
+        ],
+        onClick: ({ key }: any) => {
+          switch (key) {
+            case "left":
+            case "center":
+            case "right":
+            case "justify":
+              editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, key);
+              break;
+            case "outdent":
+              editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
+              break;
+            case "indent":
+              editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);
+              break;
+          }
+        }
+      }}
+      disabled={disabled}
+      buttonLabel={formatOption.name}
+      buttonIconClassName={`icon ${formatOption.icon}`}
+      buttonClassName="toolbar-item spaced alignment"
+    />
+  );
 }
 
 export default function ToolbarPlugin({
-  setIsLinkEditMode,
+  setIsLinkEditMode
 }: {
   setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element {
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
-  const [blockType, setBlockType] =
-    useState<keyof typeof blockTypeToBlockName>('paragraph');
-  const [rootType, setRootType] =
-    useState<keyof typeof rootTypeToRootName>('root');
-  const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
-    null,
-  );
-  const [fontSize, setFontSize] = useState<string>('15px');
-  const [fontColor, setFontColor] = useState<string>('#000');
-  const [bgColor, setBgColor] = useState<string>('#fff');
-  const [fontFamily, setFontFamily] = useState<string>('Arial');
-  const [elementFormat, setElementFormat] = useState<ElementFormatType>('left');
+  const [blockType, setBlockType] = useState<keyof typeof blockTypeToBlockName>("paragraph");
+  const [rootType, setRootType] = useState<keyof typeof rootTypeToRootName>("root");
+  const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(null);
+  const [fontSize, setFontSize] = useState<string>("15px");
+  const [fontColor, setFontColor] = useState<string>("#000");
+  const [bgColor, setBgColor] = useState<string>("#fff");
+  const [fontFamily, setFontFamily] = useState<string>("Arial");
+  const [elementFormat, setElementFormat] = useState<ElementFormatType>("left");
   const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -497,7 +507,7 @@ export default function ToolbarPlugin({
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [isRTL, setIsRTL] = useState(false);
-  const [codeLanguage, setCodeLanguage] = useState<string>('');
+  const [codeLanguage, setCodeLanguage] = useState<string>("");
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
 
   const $updateToolbar = useCallback(() => {
@@ -505,12 +515,12 @@ export default function ToolbarPlugin({
     if ($isRangeSelection(selection)) {
       const anchorNode = selection.anchor.getNode();
       let element =
-        anchorNode.getKey() === 'root'
+        anchorNode.getKey() === "root"
           ? anchorNode
           : $findMatchingParent(anchorNode, (e) => {
-            const parent = e.getParent();
-            return parent !== null && $isRootOrShadowRoot(parent);
-          });
+              const parent = e.getParent();
+              return parent !== null && $isRootOrShadowRoot(parent);
+            });
 
       if (element === null) {
         element = anchorNode.getTopLevelElementOrThrow();
@@ -520,13 +530,13 @@ export default function ToolbarPlugin({
       const elementDOM = activeEditor.getElementByKey(elementKey);
 
       // Update text format
-      setIsBold(selection.hasFormat('bold'));
-      setIsItalic(selection.hasFormat('italic'));
-      setIsUnderline(selection.hasFormat('underline'));
-      setIsStrikethrough(selection.hasFormat('strikethrough'));
-      setIsSubscript(selection.hasFormat('subscript'));
-      setIsSuperscript(selection.hasFormat('superscript'));
-      setIsCode(selection.hasFormat('code'));
+      setIsBold(selection.hasFormat("bold"));
+      setIsItalic(selection.hasFormat("italic"));
+      setIsUnderline(selection.hasFormat("underline"));
+      setIsStrikethrough(selection.hasFormat("strikethrough"));
+      setIsSubscript(selection.hasFormat("subscript"));
+      setIsSuperscript(selection.hasFormat("superscript"));
+      setIsCode(selection.hasFormat("code"));
       setIsRTL($isParentElementRTL(selection));
 
       // Update links
@@ -540,62 +550,40 @@ export default function ToolbarPlugin({
 
       const tableNode = $findMatchingParent(node, $isTableNode);
       if ($isTableNode(tableNode)) {
-        setRootType('table');
+        setRootType("table");
       } else {
-        setRootType('root');
+        setRootType("root");
       }
 
       if (elementDOM !== null) {
         setSelectedElementKey(elementKey);
         if ($isListNode(element)) {
-          const parentList = $getNearestNodeOfType<ListNode>(
-            anchorNode,
-            ListNode,
-          );
-          const type = parentList
-            ? parentList.getListType()
-            : element.getListType();
+          const parentList = $getNearestNodeOfType<ListNode>(anchorNode, ListNode);
+          const type = parentList ? parentList.getListType() : element.getListType();
           setBlockType(type);
         } else {
-          const type = $isHeadingNode(element)
-            ? element.getTag()
-            : element.getType();
+          const type = $isHeadingNode(element) ? element.getTag() : element.getType();
           if (type in blockTypeToBlockName) {
             setBlockType(type as keyof typeof blockTypeToBlockName);
           }
           if ($isCodeNode(element)) {
-            const language =
-              element.getLanguage() as keyof typeof CODE_LANGUAGE_MAP;
-            setCodeLanguage(
-              language ? CODE_LANGUAGE_MAP[language] || language : '',
-            );
+            const language = element.getLanguage() as keyof typeof CODE_LANGUAGE_MAP;
+            setCodeLanguage(language ? CODE_LANGUAGE_MAP[language] || language : "");
             return;
           }
         }
       }
       // Handle buttons
-      setFontSize(
-        $getSelectionStyleValueForProperty(selection, 'font-size', '15px'),
-      );
-      setFontColor(
-        $getSelectionStyleValueForProperty(selection, 'color', '#000'),
-      );
-      setBgColor(
-        $getSelectionStyleValueForProperty(
-          selection,
-          'background-color',
-          '#fff',
-        ),
-      );
-      setFontFamily(
-        $getSelectionStyleValueForProperty(selection, 'font-family', 'Arial'),
-      );
+      setFontSize($getSelectionStyleValueForProperty(selection, "font-size", "15px"));
+      setFontColor($getSelectionStyleValueForProperty(selection, "color", "#000"));
+      setBgColor($getSelectionStyleValueForProperty(selection, "background-color", "#fff"));
+      setFontFamily($getSelectionStyleValueForProperty(selection, "font-family", "Arial"));
       let matchingParent;
       if ($isLinkNode(parent)) {
         // If node is a link, we need to fetch the parent paragraph node to set format
         matchingParent = $findMatchingParent(
           node,
-          (parentNode) => $isElementNode(parentNode) && !parentNode.isInline(),
+          (parentNode) => $isElementNode(parentNode) && !parentNode.isInline()
         );
       }
 
@@ -605,7 +593,7 @@ export default function ToolbarPlugin({
           ? matchingParent.getFormatType()
           : $isElementNode(node)
             ? node.getFormatType()
-            : parent?.getFormatType() || 'left',
+            : parent?.getFormatType() || "left"
       );
     }
   }, [activeEditor]);
@@ -618,7 +606,7 @@ export default function ToolbarPlugin({
         setActiveEditor(newEditor);
         return false;
       },
-      COMMAND_PRIORITY_CRITICAL,
+      COMMAND_PRIORITY_CRITICAL
     );
   }, [editor, $updateToolbar]);
 
@@ -638,7 +626,7 @@ export default function ToolbarPlugin({
           setCanUndo(payload);
           return false;
         },
-        COMMAND_PRIORITY_CRITICAL,
+        COMMAND_PRIORITY_CRITICAL
       ),
       activeEditor.registerCommand<boolean>(
         CAN_REDO_COMMAND,
@@ -646,8 +634,8 @@ export default function ToolbarPlugin({
           setCanRedo(payload);
           return false;
         },
-        COMMAND_PRIORITY_CRITICAL,
-      ),
+        COMMAND_PRIORITY_CRITICAL
+      )
     );
   }, [$updateToolbar, activeEditor, editor]);
 
@@ -658,12 +646,12 @@ export default function ToolbarPlugin({
         const event: KeyboardEvent = payload;
         const { code, ctrlKey, metaKey } = event;
 
-        if (code === 'KeyK' && (ctrlKey || metaKey)) {
+        if (code === "KeyK" && (ctrlKey || metaKey)) {
           event.preventDefault();
           let url: string | null;
           if (!isLink) {
             setIsLinkEditMode(true);
-            url = sanitizeUrl('https://');
+            url = sanitizeUrl("https://");
           } else {
             setIsLinkEditMode(false);
             url = null;
@@ -672,7 +660,7 @@ export default function ToolbarPlugin({
         }
         return false;
       },
-      COMMAND_PRIORITY_NORMAL,
+      COMMAND_PRIORITY_NORMAL
     );
   }, [activeEditor, isLink, setIsLinkEditMode]);
 
@@ -685,10 +673,10 @@ export default function ToolbarPlugin({
             $patchStyleText(selection, styles);
           }
         },
-        skipHistoryStack ? { tag: 'historic' } : {},
+        skipHistoryStack ? { tag: "historic" } : {}
       );
     },
-    [activeEditor],
+    [activeEditor]
   );
 
   const clearFormatting = useCallback(() => {
@@ -728,18 +716,18 @@ export default function ToolbarPlugin({
               textNode = extractedTextNode;
             }
 
-            if (textNode.__style !== '') {
-              textNode.setStyle('');
+            if (textNode.__style !== "") {
+              textNode.setStyle("");
             }
             if (textNode.__format !== 0) {
               textNode.setFormat(0);
-              $getNearestBlockElementAncestorOrThrow(textNode).setFormat('');
+              $getNearestBlockElementAncestorOrThrow(textNode).setFormat("");
             }
             node = textNode;
           } else if ($isHeadingNode(node) || $isQuoteNode(node)) {
             node.replace($createParagraphNode(), true);
           } else if ($isDecoratorBlockNode(node)) {
-            node.setFormat('');
+            node.setFormat("");
           }
         });
       }
@@ -750,20 +738,20 @@ export default function ToolbarPlugin({
     (value: string, skipHistoryStack: boolean) => {
       applyStyleText({ color: value }, skipHistoryStack);
     },
-    [applyStyleText],
+    [applyStyleText]
   );
 
   const onBgColorSelect = useCallback(
     (value: string, skipHistoryStack: boolean) => {
-      applyStyleText({ 'background-color': value }, skipHistoryStack);
+      applyStyleText({ "background-color": value }, skipHistoryStack);
     },
-    [applyStyleText],
+    [applyStyleText]
   );
 
   const insertLink = useCallback(() => {
     if (!isLink) {
       setIsLinkEditMode(true);
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl('https://'));
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl("https://"));
     } else {
       setIsLinkEditMode(false);
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
@@ -781,20 +769,20 @@ export default function ToolbarPlugin({
         }
       });
     },
-    [activeEditor, selectedElementKey],
+    [activeEditor, selectedElementKey]
   );
 
   // const insertGifOnClick = (payload: InsertImagePayload) => {
   //   activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
   // };
 
-  let formatTextActive: any = []
+  let formatTextActive: any = [];
   if (isStrikethrough) {
-    formatTextActive = ['strikethrough']
+    formatTextActive = ["strikethrough"];
   } else if (isSubscript) {
-    formatTextActive = ['subscript']
+    formatTextActive = ["subscript"];
   } else if (isSuperscript) {
-    formatTextActive = ['superscript']
+    formatTextActive = ["superscript"];
   }
 
   return (
@@ -804,10 +792,11 @@ export default function ToolbarPlugin({
         onClick={() => {
           activeEditor.dispatchCommand(UNDO_COMMAND, undefined);
         }}
-        title={IS_APPLE ? '撤回 (⌘Z)' : '撤回 (Ctrl+Z)'}
+        title={IS_APPLE ? "撤回 (⌘Z)" : "撤回 (Ctrl+Z)"}
         type="button"
         className="toolbar-item spaced"
-        aria-label="Undo">
+        aria-label="Undo"
+      >
         <UndoOutlined />
       </button>
       <button
@@ -815,10 +804,11 @@ export default function ToolbarPlugin({
         onClick={() => {
           activeEditor.dispatchCommand(REDO_COMMAND, undefined);
         }}
-        title={IS_APPLE ? '前进 (⌘Y)' : '前进 (Ctrl+Y)'}
+        title={IS_APPLE ? "前进 (⌘Y)" : "前进 (Ctrl+Y)"}
         type="button"
         className="toolbar-item"
-        aria-label="Redo">
+        aria-label="Redo"
+      >
         <RedoOutlined />
       </button>
       <Divider />
@@ -835,27 +825,30 @@ export default function ToolbarPlugin({
         </>
       )}
 
-      {blockType === 'code' ? (
+      {blockType === "code" ? (
         <>
-          <MyDropdown disabled={!isEditable} menu={{
-            items: CODE_LANGUAGE_OPTIONS.map(([value, name]) => (
-              {
+          <MyDropdown
+            disabled={!isEditable}
+            menu={{
+              items: CODE_LANGUAGE_OPTIONS.map(([value, name]) => ({
                 key: value,
-                label: name,
-              }
-            )),
-            onClick: ({ key }: any) => {
-              onCodeLanguageSelect(key)
-            },
-            selectable: true,
-            selectedKeys: [codeLanguage],
-          }} buttonClassName="toolbar-item code-language" buttonLabel={getLanguageFriendlyName(codeLanguage)} />
+                label: name
+              })),
+              onClick: ({ key }: any) => {
+                onCodeLanguageSelect(key);
+              },
+              selectable: true,
+              selectedKeys: [codeLanguage]
+            }}
+            buttonClassName="toolbar-item code-language"
+            buttonLabel={getLanguageFriendlyName(codeLanguage)}
+          />
         </>
       ) : (
         <>
           <FontDropDown
             disabled={!isEditable}
-            style={'font-family'}
+            style={"font-family"}
             value={fontFamily}
             editor={editor}
           />
@@ -869,57 +862,59 @@ export default function ToolbarPlugin({
           <button
             disabled={!isEditable}
             onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
             }}
-            className={'toolbar-item spaced ' + (isBold ? 'active' : '')}
-            title={IS_APPLE ? 'Bold (⌘B)' : 'Bold (Ctrl+B)'}
+            className={"toolbar-item spaced " + (isBold ? "active" : "")}
+            title={IS_APPLE ? "Bold (⌘B)" : "Bold (Ctrl+B)"}
             type="button"
-            aria-label={`Format text as bold. Shortcut: ${IS_APPLE ? '⌘B' : 'Ctrl+B'
-              }`}>
+            aria-label={`Format text as bold. Shortcut: ${IS_APPLE ? "⌘B" : "Ctrl+B"}`}
+          >
             <i className="format bold" />
           </button>
           <button
             disabled={!isEditable}
             onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
             }}
-            className={'toolbar-item spaced ' + (isItalic ? 'active' : '')}
-            title={IS_APPLE ? 'Italic (⌘I)' : 'Italic (Ctrl+I)'}
+            className={"toolbar-item spaced " + (isItalic ? "active" : "")}
+            title={IS_APPLE ? "Italic (⌘I)" : "Italic (Ctrl+I)"}
             type="button"
-            aria-label={`Format text as italics. Shortcut: ${IS_APPLE ? '⌘I' : 'Ctrl+I'
-              }`}>
+            aria-label={`Format text as italics. Shortcut: ${IS_APPLE ? "⌘I" : "Ctrl+I"}`}
+          >
             <i className="format italic" />
           </button>
           <button
             disabled={!isEditable}
             onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
             }}
-            className={'toolbar-item spaced ' + (isUnderline ? 'active' : '')}
-            title={IS_APPLE ? 'Underline (⌘U)' : 'Underline (Ctrl+U)'}
+            className={"toolbar-item spaced " + (isUnderline ? "active" : "")}
+            title={IS_APPLE ? "Underline (⌘U)" : "Underline (Ctrl+U)"}
             type="button"
-            aria-label={`Format text to underlined. Shortcut: ${IS_APPLE ? '⌘U' : 'Ctrl+U'
-              }`}>
+            aria-label={`Format text to underlined. Shortcut: ${IS_APPLE ? "⌘U" : "Ctrl+U"}`}
+          >
             <i className="format underline" />
           </button>
           <button
             disabled={!isEditable}
             onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
             }}
-            className={'toolbar-item spaced ' + (isCode ? 'active' : '')}
+            className={"toolbar-item spaced " + (isCode ? "active" : "")}
             title="Insert code block"
             type="button"
-            aria-label="Insert code block">
+            aria-label="Insert code block"
+          >
             <i className="format code" />
           </button>
           <button
             disabled={!isEditable}
             onClick={insertLink}
-            className={'toolbar-item spaced ' + (isLink ? 'active' : '')}
+            className={"toolbar-item spaced " + (isLink ? "active" : "")}
             aria-label="Insert link"
             title="Insert link"
-            type="button">
+            type="button"
+          >
             <i className="format link" />
           </button>
           <DropdownColorPicker
@@ -941,89 +936,101 @@ export default function ToolbarPlugin({
             title="bg color"
           />
 
-          <MyDropdown disabled={!isEditable} menu={{
-            items: [
-              {
-                key: 'strikethrough',
-                icon: <i className="icon strikethrough" />,
-                label: '删除线'
+          <MyDropdown
+            disabled={!isEditable}
+            menu={{
+              items: [
+                {
+                  key: "strikethrough",
+                  icon: <i className="icon strikethrough" />,
+                  label: "删除线"
+                },
+                {
+                  key: "subscript",
+                  icon: <i className="icon subscript" />,
+                  label: "下标"
+                },
+                {
+                  key: "superscript",
+                  icon: <i className="icon superscript" />,
+                  label: "上标"
+                },
+                {
+                  key: "clear",
+                  icon: <i className="icon clear" />,
+                  label: "清除格式"
+                }
+              ],
+              onClick: ({ key }: any) => {
+                switch (key) {
+                  case "strikethrough":
+                  case "subscript":
+                  case "superscript":
+                    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, key);
+                    break;
+                  case "clear":
+                    clearFormatting();
+                    break;
+                }
               },
-              {
-                key: 'subscript',
-                icon: <i className="icon subscript" />,
-                label: '下标'
-              },
-              {
-                key: 'superscript',
-                icon: <i className="icon superscript" />,
-                label: '上标'
-              },
-              {
-                key: 'clear',
-                icon: <i className="icon clear" />,
-                label: '清除格式'
-              }
-            ], onClick: ({ key }: any) => {
-              switch (key) {
-                case 'strikethrough':
-                case 'subscript':
-                case 'superscript':
-                  activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, key);
-                  break
-                case 'clear':
-                  clearFormatting()
-                  break
-              }
-            },
-            selectable: true,
-            selectedKeys: formatTextActive,
-          }} buttonClassName="toolbar-item spaced"
+              selectable: true,
+              selectedKeys: formatTextActive
+            }}
+            buttonClassName="toolbar-item spaced"
             buttonLabel=""
             buttonAriaLabel="Formatting options for additional text styles"
-            buttonIconClassName="icon dropdown-more" />
+            buttonIconClassName="icon dropdown-more"
+          />
 
           <Divider />
 
-          <MyDropdown disabled={!isEditable} menu={{
-            items: [
-              {
-                key: 'horizontal-rule',
-                icon: <i className="icon horizontal-rule" />,
-                label: '水平线'
-              },
-              {
-                key: 'page-break',
-                icon: <i className="icon page-break" />,
-                label: '页面分隔'
-              },
-              // {
-              //   key: 'image',
-              //   icon: <i className="icon image" />,
-              //   label: '图片'
-              // },
-              // {
-              //   key: 'table',
-              //   icon: <i className="icon table" />,
-              //   label: '表格'
-              // }
-            ],
-            onClick: ({ key }: any) => {
-              switch (key) {
-                case 'horizontal-rule':
-                  activeEditor.dispatchCommand(
-                    INSERT_HORIZONTAL_RULE_COMMAND,
-                    undefined,
-                  );
-                  break
-                case 'page-break':
-                  activeEditor.dispatchCommand(INSERT_PAGE_BREAK, undefined);
-                  break
+          <MyDropdown
+            disabled={!isEditable}
+            menu={{
+              items: [
+                {
+                  key: "horizontal-rule",
+                  icon: <i className="icon horizontal-rule" />,
+                  label: "水平线"
+                },
+                {
+                  key: "page-break",
+                  icon: <i className="icon page-break" />,
+                  label: "页面分隔"
+                },
+                {
+                  key: "image",
+                  icon: <i className="icon image" />,
+                  label: "图片"
+                }
+                // {
+                //   key: 'table',
+                //   icon: <i className="icon table" />,
+                //   label: '表格'
+                // }
+              ],
+              onClick: ({ key }: any) => {
+                switch (key) {
+                  case "horizontal-rule":
+                    activeEditor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined);
+                    break;
+                  case "page-break":
+                    activeEditor.dispatchCommand(INSERT_PAGE_BREAK, undefined);
+                    break;
+                  case "image":
+                    activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+                      altText: "Daylight fir trees forest glacier green high ice landscape",
+                      src: "/assets/images/landscape.jpg"
+                    });
+                    break;
+                }
               }
-            },
-          }} buttonClassName="toolbar-item spaced"
+            }}
+            buttonClassName="toolbar-item spaced"
             buttonLabel="插入"
             buttonAriaLabel="Formatting options for additional text styles"
-            buttonIconClassName="icon plus" />
+            buttonIconClassName="icon plus"
+          />
         </>
       )}
       <Divider />

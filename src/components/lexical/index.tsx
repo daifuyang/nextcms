@@ -8,7 +8,6 @@
 
 import { SharedHistoryContext, useSharedHistoryContext } from "./context/SharedHistoryContext";
 
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { OnChangePlugin } from "./plugins/OnChangePlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -33,11 +32,11 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import PageBreakPlugin from "./plugins/PageBreakPlugin";
 import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
+import ImagesPlugin from "./plugins/ImagesPlugin";
 import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
 import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import TableCellResizer from "./plugins/TableCellResizer";
 import TableCellActionMenuPlugin from "./plugins/TableActionMenuPlugin";
-import dynamic from "next/dynamic";
 import { CAN_USE_DOM } from "./shared/canUseDOM";
 import FloatingLinkEditorPlugin from "./plugins/FloatingLinkEditorPlugin";
 import FloatingTextFormatToolbarPlugin from "./plugins/FloatingTextFormatToolbarPlugin";
@@ -126,6 +125,7 @@ export default function App(props: Props) {
           <ListMaxIndentLevelPlugin maxDepth={7} />
           <TablePlugin hasCellMerge={true} hasCellBackgroundColor={true} />
           <TableCellResizer />
+          <ImagesPlugin />
           <LinkPlugin />
           <HorizontalRulePlugin />
           <PageBreakPlugin />

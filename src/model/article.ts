@@ -55,6 +55,10 @@ export async function getList(params: ParamsProps) {
   for (let index = 0; index < articles.length; index++) {
     const item = articles[index];
     widthDateTime(list[index], item);
+
+    if (list[index]?.keywords) {
+      (list[index] as any).keywords = item.keywords?.split(",") || [];
+    }
     const categoryPosts = await getCategoryPostsByArticleId(item.id);
     await getCategorysByPosts(list[index], categoryPosts);
   }
@@ -86,7 +90,10 @@ export async function getArticleById(id: number) {
 }
 
 // 创建一篇文章
-export async function createArticle(data: Prisma.cmsArticleCreateInput, tx: Omit<PrismaClient, ITXClientDenyList> = prisma) {
+export async function createArticle(
+  data: Prisma.cmsArticleCreateInput,
+  tx: Omit<PrismaClient, ITXClientDenyList> = prisma
+) {
   const article = await tx.cmsArticle.create({
     data
   });
@@ -94,10 +101,13 @@ export async function createArticle(data: Prisma.cmsArticleCreateInput, tx: Omit
 }
 
 // 更新一篇文章
-export async function updateArticle(id: number, data: Prisma.cmsArticleUpdateInput, tx: Omit<PrismaClient, ITXClientDenyList> = prisma) {
- 
-  const key = `${articleIdKey}${id}`
-  redis.del(key)
+export async function updateArticle(
+  id: number,
+  data: Prisma.cmsArticleUpdateInput,
+  tx: Omit<PrismaClient, ITXClientDenyList> = prisma
+) {
+  const key = `${articleIdKey}${id}`;
+  redis.del(key);
 
   const article = await tx.cmsArticle.update({
     where: {

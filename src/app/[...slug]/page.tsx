@@ -3,7 +3,6 @@ import { getArticle } from "@/services/app/article";
 import { notFound } from "next/navigation";
 import pathToRegexp, { Key } from "path-to-regexp";
 import ReactRender from "../ReactRender";
-
 import articleSchema from "@/template/article.json";
 
 interface Props {

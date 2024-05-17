@@ -35,7 +35,6 @@ export default function Save(props: Props) {
   const { title = "新增文章", children, initialValues, onFinish } = props;
   const [form] = Form.useForm<ModalFormProps>();
   const [open, setOpen] = useState(false);
-  const [categoryIds, setCategoryIds] = useState<any[]>([]);
 
   useEffect(() => {
     if (initialValues?.id && open) {
@@ -108,12 +107,8 @@ export default function Save(props: Props) {
       <ProFormText name="id" hidden />
 
       <ProFormTreeSelect
-        initialValue={categoryIds}
         fieldProps={{
           style: { width: 288 },
-          onChange(value, labelList, extra) {
-            setCategoryIds(value);
-          },
           treeDefaultExpandAll: true,
           treeCheckStrictly: true,
           treeCheckable: true,
