@@ -7,10 +7,10 @@ interface Breadcrumb {
 }
 
 interface Routes {
-    path: string;
-    icon: string;
-    name: string;
-    children?: Routes[];
+  path: string;
+  icon: string;
+  name: string;
+  children?: Routes[];
 }
 
 export interface InitialState {
@@ -43,6 +43,18 @@ const initialState: InitialState = {
             path: "/admin/article/category",
             icon: "",
             name: "文章分类"
+          }
+        ]
+      },
+      {
+        path: "/admin/resource",
+        icon: "",
+        name: "资源管理",
+        children: [
+          {
+            path: "/admin/resource/list",
+            icon: "",
+            name: "素材中心"
           }
         ]
       }

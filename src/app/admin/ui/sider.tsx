@@ -6,9 +6,6 @@ import { usePathname } from "next/navigation";
 
 import {
   MenuFoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined
 } from "@ant-design/icons";
 import Link from "next/link";
 import { useSelector } from "react-redux";
@@ -26,6 +23,28 @@ function Trigger() {
       />
     </div>
   );
+}
+
+function findParentKey(routes: any, key: string) {
+  for (let route of routes) {
+    // 检查当前路由是否有子路由
+    if (route.children) {
+      // 遍历子路由
+      for (let child of route.children) {
+        // 如果找到匹配的路径，则返回父级路径
+        if (child.path === key) {
+          return route.path;
+        }
+      }
+      // 递归检查子路由
+      const parentPath = findParentKey(route.children, key);
+      if (parentPath) {
+        return route.path;
+      }
+    }
+  }
+  // 如果没有找到匹配的路径，返回null
+  return null;
 }
 
 function getRoutes(routes: any) {
@@ -57,12 +76,17 @@ function getRoutes(routes: any) {
   return items;
 }
 
+
+
 export default function Sider() {
   const pathname = usePathname();
 
   const [collapsed, setCollapsed] = useState(false);
 
   const routes = useSelector((state: RootState) => state.initialStateReducer.initialState.routes);
+
+  
+  const parentPathname = findParentKey(routes, pathname)
 
   const items = getRoutes(routes);
 
@@ -73,7 +97,7 @@ export default function Sider() {
       onCollapse={(value) => setCollapsed(value)}
       trigger={<Trigger />}
     >
-      <Menu mode="inline" theme="light" selectedKeys={[pathname]} items={items} />
+      <Menu mode="inline" theme="light" defaultOpenKeys={[parentPathname]} selectedKeys={[pathname]} items={items} />
     </AntdSider>
   );
 }
