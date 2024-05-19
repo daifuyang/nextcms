@@ -26,11 +26,11 @@ export async function middleware(request: NextRequest) {
 
     const res = await response.json();
 
-    if(res.code !== 1) {
+    if (res.code !== 1) {
       return api.errorWithCode(-1, "用户身份已失效！");
     }
-    
-    const {data} = res
+
+    const { data } = res;
     requestHeaders.set("userId", data.id);
     requestHeaders.set("loginName", data.loginName);
   }

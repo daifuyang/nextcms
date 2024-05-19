@@ -26,8 +26,9 @@ export default function Resource() {
           const res = await getResourceList();
           if (res.code == 1) {
             return {
-              data: res.data,
-              success: true
+              data: res.data.data,
+              success: true,
+              total: res.data.total
             };
           }
           return {

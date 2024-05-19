@@ -3,7 +3,6 @@
  * @date: 2024-05-16
  * @description: 素材模型文件
  */
-
 import prisma from "@/utils/prisma";
 
 // 获取资源总数
@@ -33,5 +32,12 @@ export async function getResourceList(params: resourceListParams) {
         deletedAt: 0
       }
     });
+
+    // 追加prevPath
+
+    resource.forEach((item) => {
+      (item as any).prevPath = `/${item.filePath}`
+    })
+
     return resource;
   }
