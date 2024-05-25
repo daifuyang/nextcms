@@ -4,6 +4,7 @@
  * @description: 素材模型文件
  */
 import prisma from "@/utils/prisma";
+import { getConfigByKey } from "./config";
 
 // 获取资源总数
 export async function getResourceCount() {
@@ -35,8 +36,10 @@ export async function getResourceList(params: resourceListParams) {
 
     // 追加prevPath
 
+    const origin = await getConfigByKey("cdn") || "/"
+
     resource.forEach((item) => {
-      (item as any).prevPath = `/${item.filePath}`
+      (item as any).prevPath = `${origin}${item.filePath}`
     })
 
     return resource;

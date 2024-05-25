@@ -22,8 +22,8 @@ export default function Resource() {
             success: false
           };
         }}
-        listRequest={async () => {
-          const res = await getResourceList();
+        listRequest={async (params: any) => {
+          const res = await getResourceList(params);
           if (res.code == 1) {
             return {
               data: res.data.data,
@@ -34,6 +34,9 @@ export default function Resource() {
           return {
             success: false
           };
+        }}
+        colSpan={{
+          span: 4
         }}
       />
     </>
