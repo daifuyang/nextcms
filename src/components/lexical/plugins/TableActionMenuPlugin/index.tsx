@@ -513,7 +513,7 @@ function TableActionMenu({
       className="dropdown"
       ref={dropDownRef}
       onClick={(e) => {
-        e.stopPropagation();
+        e.stopPropagination();
       }}>
       {mergeCellButton}
       <button
@@ -744,7 +744,7 @@ function TableCellActionMenuContainer({
             type="button"
             className="table-cell-action-button chevron-down"
             onClick={(e) => {
-              e.stopPropagation();
+              e.stopPropagination();
               setIsMenuOpen(!isMenuOpen);
             }}
             ref={menuRootRef}>

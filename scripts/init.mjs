@@ -37,7 +37,41 @@ async function main() {
     });
   }
 
-  console.log("sql init finished");
+  // 创建默认资源分类
+  const assetsCategory = await prisma.cmsResourceCategory.count();
+  if (!assetsCategory) {
+    const defaultFields = {
+      parentId: 0,
+      createId: 1,
+      creator: "admin",
+      updateId: 1,
+      updater: "admin",
+      createdAt: Math.floor(Date.now() / 1000), // 当前时间的时间戳（秒）
+      updatedAt: Math.floor(Date.now() / 1000), // 当前时间的时间戳（秒）
+      deletedAt: 0
+    };
+
+    const defaultCategories = [
+      {
+        id: 1,
+        name: "未分组",
+        description: null,
+        ...defaultFields
+      },
+      {
+        id: 2,
+        name: "富文本编辑器",
+        description: null,
+        ...defaultFields
+      }
+    ];
+
+    await prisma.cmsResourceCategory.createMany({
+      data: defaultCategories
+    });
+
+    console.log("sql init finished");
+  }
 }
 
 main()

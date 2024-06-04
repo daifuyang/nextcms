@@ -14,9 +14,13 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const current = parseInt(searchParams.get("current") || "1");
   const pageSize = parseInt(searchParams.get("pageSize") || "10");
+  const type = searchParams.get("type");
+  if (!type) {
+    return api.error("参数错误！");
+  }
 
-  const total = await getResourceCount();
-  const data = await getResourceList({ current, pageSize });
+  const total = await getResourceCount({ type });
+  const data = await getResourceList({ current, pageSize, type });
 
   return api.success("获取成功！", {
     total,
@@ -26,12 +30,13 @@ export async function GET(request: NextRequest) {
   });
 }
 
-export const POST = async (request: NextRequest) => {
+export async function POST(request: NextRequest) {
   const { origin } = request.nextUrl;
 
   const formData = await request.formData();
 
   let type = "";
+  let categoryId = "1";
   let files: any = [];
   const entries = formData.entries();
   let entry = entries.next();
@@ -40,6 +45,8 @@ export const POST = async (request: NextRequest) => {
       files.push(entry.value[1]);
     } else if (entry.value[0] == "type") {
       type = entry.value[1].toString();
+    }else if (entry.value[0] == "categoryId") {
+      categoryId = entry.value[1].toString();
     }
     entry = entries.next();
   }
@@ -49,7 +56,7 @@ export const POST = async (request: NextRequest) => {
   }
 
   // 类型枚举
-  const typeEumn = ["image", "video", "file"];
+  const typeEumn = ["image", "audio", "video", "file"];
   if (!typeEumn.includes(type)) {
     return api.error("文件类型不正确！");
   }
@@ -57,6 +64,7 @@ export const POST = async (request: NextRequest) => {
   const { userId, loginName } = getCurrentUser(request);
 
   let data = [];
+
   for (const file of files) {
     const filename = file.name;
     const ext = path.extname(file.name);
@@ -77,6 +85,18 @@ export const POST = async (request: NextRequest) => {
     });
 
     if (exist) {
+      if (exist.deletedAt > 0) {
+        await prisma.cmsResource.update({
+          where: {
+            id: exist.id
+          },
+          data: {
+            deletedAt: 0,
+            updatedAt: now()
+          }
+        });
+      }
+
       data.push({
         name: exist.name,
         filePath: exist.filePath,
@@ -113,6 +133,7 @@ export const POST = async (request: NextRequest) => {
       const resource = await prisma.cmsResource.create({
         data: {
           name: filename,
+          categoryId,
           filePath: uploadPath + savename,
           md5: md5Value,
           sha1: sha1Value,
@@ -137,4 +158,4 @@ export const POST = async (request: NextRequest) => {
   return api.success("上传成功！", {
     data
   });
-};
+}

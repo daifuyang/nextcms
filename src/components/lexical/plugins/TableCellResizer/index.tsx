@@ -249,7 +249,7 @@ function TableCellResizer({ editor }: { editor: LexicalEditor }): JSX.Element {
     (direction: MouseDraggingDirection) => {
       const handler = (event: MouseEvent) => {
         event.preventDefault();
-        event.stopPropagation();
+        event.stopPropagination();
 
         if (!activeCell) {
           throw new Error('TableCellResizer: Expected active cell.');
@@ -306,7 +306,7 @@ function TableCellResizer({ editor }: { editor: LexicalEditor }): JSX.Element {
     (direction: MouseDraggingDirection): MouseEventHandler<HTMLDivElement> =>
       (event) => {
         event.preventDefault();
-        event.stopPropagation();
+        event.stopPropagination();
 
         if (!activeCell) {
           throw new Error('TableCellResizer: Expected active cell.');

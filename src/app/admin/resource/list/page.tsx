@@ -2,7 +2,12 @@
 
 import { useRef } from "react";
 import { Assets, ChooseModal, ChooseModalRef } from "@nextcms/easy-upload/src";
-import { getResourceList, uploadFiles } from "@/services/admin/resource";
+import {
+  deleteResource,
+  getResourceCategory,
+  getResourceList,
+  uploadFiles
+} from "@/services/admin/resource";
 
 export default function Resource() {
   const chooseRef = useRef<ChooseModalRef>(null);
@@ -35,8 +40,41 @@ export default function Resource() {
             success: false
           };
         }}
+        deleteRequest={async (id: number) => {
+          const res = await deleteResource(id);
+          if (res.code == 1) {
+            return {
+              data: res.data,
+              success: true
+            };
+          }
+          return {
+            success: false
+          };
+        }}
+        categoryRequest={async (params: any) => {
+          const res = await getResourceCategory(params);
+          if (res.code == 1) {
+            return {
+              data: res.data,
+              success: true
+            };
+          }
+          return {
+            success: false
+          };
+        }}
+        uploadProps={{
+          fieldNames: { label: "name", value: "id", children: "children" }
+        }}
+        categoryProps={{
+          fieldNames: { title: "name", key: "id", children: "children" }
+        }}
         colSpan={{
           span: 4
+        }}
+        pagination={{
+          pageSize: 12
         }}
       />
     </>

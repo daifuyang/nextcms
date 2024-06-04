@@ -7,7 +7,6 @@
 import redis from "@/utils/redis";
 import prisma from "../utils/prisma";
 import { cmsUser, cmsUserToken } from "@prisma/client";
-import api from "@/utils/response";
 import dayjs from "dayjs";
 import { now } from "@/utils/date";
 
@@ -24,6 +23,32 @@ interface CurrentUserParams {
 }
 
 const userIdKey = "nextcms:user:id:";
+
+// 统计所有用户数量
+export async function getUserTotal(tx = prisma) {
+  return tx.cmsUser.count();
+}
+
+// 获取用户列表
+export async function getUserList(current: number, pageSize: number, tx = prisma) {
+  const params: {
+    skip?: number;
+    take?: number;
+  } = {};
+  if (pageSize > 0) {
+    params.skip = (current - 1) * pageSize;
+    params.take = pageSize;
+  }
+
+  const user = await tx.cmsUser.findMany({
+    ...params,
+    orderBy: {
+      id: "desc"
+    }
+  });
+
+  return user;
+}
 
 // 获取当前用户信息
 export async function currentUser(params: CurrentUserParams) {

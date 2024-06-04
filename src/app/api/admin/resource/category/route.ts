@@ -18,12 +18,18 @@ export async function GET(request: NextRequest) {
   const total = await getResourceCategoryCount();
   const data = await getResourceCategoryList({ current, pageSize });
 
-  return api.success("获取成功！", {
-    total,
-    current,
-    pageSize,
-    data
-  });
+  let pagination: any = data;
+
+  if (pageSize > 0) {
+    pagination = {
+      total,
+      current,
+      pageSize,
+      data
+    };
+  }
+
+  return api.success("获取成功！", pagination);
 }
 
 // 新增分类

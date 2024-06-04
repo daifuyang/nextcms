@@ -28,9 +28,16 @@ interface resourceListParams {
 export async function getResourceCategoryList(params: resourceListParams) {
   const { current, pageSize } = params;
   const offset = (current - 1) * pageSize;
+
+  const findParams: { skip?: number; take?: number } = {};
+
+  if (pageSize > 0) {
+    findParams.skip = offset;
+    findParams.take = pageSize;
+  }
+
   const resource = await prisma.cmsResourceCategory.findMany({
-    skip: offset,
-    take: pageSize,
+    ...findParams,
     where: {
       deletedAt: 0
     }
